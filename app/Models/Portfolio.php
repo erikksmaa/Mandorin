@@ -2,23 +2,31 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Portfolio extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'mandor_profile_id',
-        'judul',
-        'foto_before',
-        'foto_after',
-        'deskripsi',
+        'contractor_profile_id',
+        'project_id',
+        'title',
+        'description',
+        'before_photo',
+        'after_photo',
     ];
 
-    public function mandorProfile(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function contractorProfile(): BelongsTo
     {
-        return $this->belongsTo(MandorProfile::class);
+        return $this->belongsTo(ContractorProfile::class);
+    }
+
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
     }
 }

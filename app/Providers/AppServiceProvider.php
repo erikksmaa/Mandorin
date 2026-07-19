@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Project;
+use App\Observers\ProjectObserver;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Fortify\Fortify;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Register ProjectObserver untuk auto-generate project_code
+        Project::observe(ProjectObserver::class);
     }
 }

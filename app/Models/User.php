@@ -2,63 +2,71 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+// use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
         'phone',
-        'role',
         'password',
+        'role',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => UserRole::class,
         ];
     }
 
-    public function mandorProfile(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function contractorProfile(): HasOne
     {
-        return $this->hasOne(MandorProfile::class);
+        return $this->hasOne(ContractorProfile::class);
     }
 
-    public function proyekSebagaiPelanggan(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function customerProjects(): HasMany
     {
-        return $this->hasMany(Proyek::class, 'pelanggan_id');
+        return $this->hasMany(Project::class, 'customer_id');
     }
 
-    public function proyekSebagaiMandor(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function contractorProjects(): HasMany
     {
-        return $this->hasMany(Proyek::class, 'mandor_id');
+        return $this->hasMany(Project::class, 'contractor_id');
+    }
+
+    public function dailyReports(): HasMany
+    {
+        return $this->hasMany(DailyReport::class, 'created_by');
+    }
+
+    public function projectStatusHistories(): HasMany
+    {
+        return $this->hasMany(ProjectStatusHistory::class, 'changed_by');
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class, 'customer_id');
+    }
+
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class);
     }
 }
