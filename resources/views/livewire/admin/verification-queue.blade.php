@@ -29,11 +29,11 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
         @forelse($contractors as $contractor)
-            <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-5 flex flex-col h-full">
+            <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-5 flex flex-col h-full">
                 <div class="flex items-start gap-4 mb-4">
                     <div class="w-12 h-12 rounded-full bg-slate-100 flex-shrink-0 overflow-hidden">
-                        @if($contractor->user->profile_photo_path)
-                            <img src="{{ asset('storage/' . $contractor->user->profile_photo_path) }}" class="w-full h-full object-cover">
+                        @if($contractor->profile_photo)
+                            <img src="{{ asset('storage/' . $contractor->profile_photo) }}" class="w-full h-full object-cover">
                         @else
                             <div class="w-full h-full flex items-center justify-center text-slate-500 font-bold text-lg">
                                 {{ substr($contractor->user->name ?? '?', 0, 1) }}
@@ -76,11 +76,12 @@
                 </div>
             </div>
         @empty
-            <div class="col-span-full py-12 text-center bg-white border border-slate-200 rounded-2xl shadow-sm">
-                <svg class="mx-auto h-12 w-12 text-slate-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                </svg>
-                <div class="text-slate-500">Tidak ada data kontraktor yang ditemukan.</div>
+            <div class="col-span-full bg-white border border-slate-200 rounded-xl shadow-sm">
+                <x-empty-state
+                    icon="verification"
+                    title="Tidak ada data kontraktor"
+                    description="Belum ada kontraktor yang mendaftar atau sesuai dengan filter yang dipilih."
+                />
             </div>
         @endforelse
     </div>

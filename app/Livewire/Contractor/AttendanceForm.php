@@ -59,7 +59,7 @@ class AttendanceForm extends Component
             );
         }
 
-        session()->flash('attendance_success', 'Data absensi berhasil disimpan.');
+        $this->dispatch('swal-success', title: 'Absensi Disimpan!', text: 'Data absensi berhasil diperbarui.');
     }
 
     public function render()

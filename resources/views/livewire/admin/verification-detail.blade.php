@@ -105,33 +105,19 @@
                 @endif
             </div>
 
-            <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6" x-data="{ confirmingApprove: false, confirmingReject: false }">
+            <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-6">
                 <h3 class="font-bold text-slate-800 mb-4">Aksi Verifikasi</h3>
-                <div class="flex gap-4">
-                    <button @click="confirmingApprove = true; confirmingReject = false" class="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-medium transition flex-1">
-                        Setujui Verifikasi
+                <div class="flex gap-3">
+                    <button
+                        @click="Swal.fire({ icon: 'question', title: 'Setujui Verifikasi?', html: 'Kontraktor <strong>{{ $contractorProfile->user->name }}</strong> akan mendapat status terverifikasi dan dapat mulai menerima proyek.', showCancelButton: true, confirmButtonText: '✓ Ya, Setujui', cancelButtonText: 'Batal', confirmButtonColor: '#059669', cancelButtonColor: '#64748b' }).then(r => { if (r.isConfirmed) { $wire.approve(); } })"
+                        class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white rounded-xl font-semibold transition flex-1 shadow-sm">
+                        ✓ Setujui Verifikasi
                     </button>
-                    <button @click="confirmingReject = true; confirmingApprove = false" class="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium transition flex-1">
-                        Tolak Verifikasi
+                    <button
+                        @click="Swal.fire({ icon: 'warning', title: 'Tolak Verifikasi?', html: 'Kontraktor <strong>{{ $contractorProfile->user->name }}</strong> akan diberi notifikasi bahwa verifikasinya ditolak.', showCancelButton: true, confirmButtonText: 'Ya, Tolak', cancelButtonText: 'Batal', confirmButtonColor: '#dc2626', cancelButtonColor: '#64748b' }).then(r => { if (r.isConfirmed) { $wire.reject(); } })"
+                        class="px-5 py-2.5 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white rounded-xl font-semibold transition flex-1 shadow-sm">
+                        ✗ Tolak Verifikasi
                     </button>
-                </div>
-
-                <!-- Confirm Approve -->
-                <div x-show="confirmingApprove" style="display: none;" class="mt-4 p-4 border border-emerald-200 bg-emerald-50 rounded-xl">
-                    <p class="text-emerald-800 text-sm mb-3">Anda yakin ingin menyetujui kontraktor ini? Mereka akan bisa mulai menerima proyek.</p>
-                    <div class="flex gap-2">
-                        <button wire:click="approve" class="px-4 py-1.5 bg-emerald-500 text-white rounded-lg text-sm font-medium">Ya, Setujui</button>
-                        <button @click="confirmingApprove = false" class="px-4 py-1.5 bg-white border border-emerald-200 text-emerald-700 rounded-lg text-sm font-medium">Batal</button>
-                    </div>
-                </div>
-
-                <!-- Confirm Reject -->
-                <div x-show="confirmingReject" style="display: none;" class="mt-4 p-4 border border-red-200 bg-red-50 rounded-xl">
-                    <p class="text-red-800 text-sm mb-3">Anda yakin ingin menolak kontraktor ini? Anda bisa memberikan pesan penolakan nanti jika perlu.</p>
-                    <div class="flex gap-2">
-                        <button wire:click="reject" class="px-4 py-1.5 bg-red-500 text-white rounded-lg text-sm font-medium">Ya, Tolak</button>
-                        <button @click="confirmingReject = false" class="px-4 py-1.5 bg-white border border-red-200 text-red-700 rounded-lg text-sm font-medium">Batal</button>
-                    </div>
                 </div>
             </div>
         </div>

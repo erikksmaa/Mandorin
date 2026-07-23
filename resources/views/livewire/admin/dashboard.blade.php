@@ -1,31 +1,34 @@
 <div>
-    <h1 class="text-2xl font-bold text-slate-800 mb-6" style="font-family: 'Big Shoulders Display', sans-serif;">
-        Dashboard Admin
-    </h1>
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-slate-800" style="font-family: 'Big Shoulders Display', sans-serif;">
+            Selamat datang, Admin {{ auth()->user()->name }}!
+        </h1>
+        <p class="text-slate-500 text-sm">Ringkasan aktivitas platform Mandorin.</p>
+    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="bg-navy text-white rounded-2xl p-5 shadow-sm">
-            <div class="text-sm opacity-80 mb-1">Total Pengguna</div>
-            <div class="text-3xl font-bold">{{ $stats['totalUsers'] }}</div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+        <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-5 border-l-4 border-l-blue-500">
+            <div class="text-sm text-slate-500 font-medium mb-1">Total Pengguna</div>
+            <div class="text-3xl font-bold text-slate-800 font-mono">{{ $stats['totalUsers'] }}</div>
         </div>
-        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-            <div class="text-sm text-slate-500 mb-1">Total Kontraktor</div>
-            <div class="text-3xl font-bold text-slate-800">{{ $stats['totalContractors'] }}</div>
+        <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-5 border-l-4 border-l-orange-500">
+            <div class="text-sm text-slate-500 font-medium mb-1">Total Kontraktor</div>
+            <div class="text-3xl font-bold text-slate-800 font-mono">{{ $stats['totalContractors'] }}</div>
         </div>
-        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-            <div class="text-sm text-slate-500 mb-1">Total Proyek</div>
-            <div class="text-3xl font-bold text-slate-800">{{ $stats['totalProjects'] }}</div>
+        <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-5 border-l-4 border-l-green-500">
+            <div class="text-sm text-slate-500 font-medium mb-1">Total Proyek</div>
+            <div class="text-3xl font-bold text-slate-800 font-mono">{{ $stats['totalProjects'] }}</div>
         </div>
-        <div class="bg-amber-100 border border-amber-200 rounded-2xl p-5 shadow-sm">
-            <div class="text-sm text-amber-800 mb-1">Antrian Verifikasi</div>
-            <div class="text-3xl font-bold text-amber-900">{{ $stats['pendingVerifications'] }}</div>
+        <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-5 border-l-4 border-l-amber-500">
+            <div class="text-sm text-slate-500 font-medium mb-1">Antrian Verifikasi</div>
+            <div class="text-3xl font-bold text-amber-600 font-mono">{{ $stats['pendingVerifications'] }}</div>
         </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2 space-y-4">
-            <h2 class="text-xl font-bold text-slate-800" style="font-family: 'Big Shoulders Display', sans-serif;">Proyek Terbaru</h2>
-            <div class="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden">
+            <h2 class="text-lg font-bold text-slate-800" style="font-family: 'Big Shoulders Display', sans-serif;">Proyek Terbaru</h2>
+            <div class="bg-white border border-slate-200 shadow-sm rounded-xl overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm text-slate-600">
                         <thead class="bg-slate-50 text-slate-800 border-b border-slate-200">
@@ -60,10 +63,10 @@
         </div>
 
         <div class="space-y-4">
-            <h2 class="text-xl font-bold text-slate-800" style="font-family: 'Big Shoulders Display', sans-serif;">Antrian Verifikasi Terbaru</h2>
+            <h2 class="text-lg font-bold text-slate-800" style="font-family: 'Big Shoulders Display', sans-serif;">Antrian Verifikasi Terbaru</h2>
             <div class="space-y-3">
                 @forelse($pendingContractors as $contractor)
-                    <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-4 flex items-center justify-between">
+                    <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-4 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-full bg-navy flex-shrink-0 flex items-center justify-center text-white font-bold">
                                 {{ substr($contractor->user->name ?? '?', 0, 1) }}
@@ -78,7 +81,7 @@
                         </a>
                     </div>
                 @empty
-                    <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 text-center text-slate-500">
+                    <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-6 text-center text-sm text-slate-500">
                         Tidak ada antrian verifikasi.
                     </div>
                 @endforelse

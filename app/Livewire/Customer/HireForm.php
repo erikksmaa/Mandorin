@@ -21,6 +21,7 @@ class HireForm extends Component
     public $title = '';
     public $description = '';
     public $address = '';
+    public $estimatedFinishDate = '';
 
     public function mount(ContractorProfile $contractorProfile): void
     {
@@ -29,15 +30,31 @@ class HireForm extends Component
 
     public function submit()
     {
-        $this->validate([
-            'serviceId' => 'required|exists:services,id',
-            'title' => 'required|string|max:100',
-            'description' => 'required|string',
-            'address' => 'required|string',
-        ]);
+        $this->validate(
+            [
+                'serviceId'           => 'required|exists:services,id',
+                'title'               => 'required|string|min:5|max:100',
+                'description'         => 'required|string|min:20',
+                'address'             => 'required|string|min:10',
+                'estimatedFinishDate' => 'nullable|date|after_or_equal:today',
+            ],
+            [
+                'serviceId.required'        => 'Silakan pilih layanan yang diinginkan.',
+                'serviceId.exists'          => 'Layanan tidak valid.',
+                'title.required'            => 'Judul proyek wajib diisi.',
+                'title.min'                 => 'Judul proyek minimal 5 karakter.',
+                'title.max'                 => 'Judul proyek maksimal 100 karakter.',
+                'description.required'      => 'Deskripsi proyek wajib diisi.',
+                'description.min'           => 'Deskripsi proyek minimal 20 karakter agar mudah dipahami mandor.',
+                'address.required'          => 'Alamat proyek wajib diisi.',
+                'address.min'               => 'Mohon isi alamat proyek lebih lengkap (minimal 10 karakter).',
+                'estimatedFinishDate.date'  => 'Format tanggal target selesai tidak valid.',
+                'estimatedFinishDate.after_or_equal' => 'Target selesai harus hari ini atau tanggal setelahnya.',
+            ]
+        );
 
         if ($this->contractorProfile->verification_status !== \App\Enums\VerificationStatus::Verified) {
-            session()->flash('error', 'Kontraktor ini belum terverifikasi atau tidak dapat menerima proyek saat ini.');
+            $this->dispatch('swal-error', title: 'Kontraktor Belum Terverifikasi!', text: 'Kontraktor ini belum diverifikasi dan tidak dapat menerima proyek saat ini.');
             return;
         }
 
@@ -48,6 +65,7 @@ class HireForm extends Component
             'title' => $this->title,
             'description' => $this->description,
             'address' => $this->address,
+            'estimated_finish_date' => $this->estimatedFinishDate ?: null,
             'status' => 'pending',
             'requested_at' => now(),
         ]);

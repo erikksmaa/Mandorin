@@ -12,13 +12,8 @@
         </span>
     </div>
 
-    @if (session()->has('success'))
-        <div class="mb-4 p-3 bg-green-100 text-green-700 rounded-xl text-sm">
-            {{ session('success') }}
-        </div>
-    @endif
 
-    <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-5 mb-6">
+    <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-5 mb-6">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
                 <span class="block text-xs font-medium text-slate-500">Klien</span>
@@ -70,13 +65,18 @@
                                 <span class="text-slate-500">Alamat</span>
                                 <span class="font-medium text-right max-w-[200px]">{{ $project->address }}</span>
                             </div>
-                            <div class="flex justify-between">
+                            <div class="flex justify-between items-center py-1">
                                 <span class="text-slate-500">Target Selesai</span>
-                                <span class="font-mono font-medium">{{ $project->estimated_finish_date ? $project->estimated_finish_date->format('d M Y') : '-' }}</span>
+                                <form wire:submit="updateEstimatedFinishDate" class="flex items-center gap-1.5">
+                                    <input type="date" wire:model="estimatedFinishDate" class="text-xs py-1 px-2 border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:border-navy outline-none">
+                                    <button type="submit" class="px-2.5 py-1 bg-navy hover:bg-navy-700 text-white text-xs font-semibold rounded-lg transition shrink-0">
+                                        Simpan
+                                    </button>
+                                </form>
                             </div>
-                            <div class="flex justify-between">
+                            <div class="flex justify-between items-center">
                                 <span class="text-slate-500">Selesai Pada</span>
-                                <span class="font-mono font-medium">{{ $project->completed_at ? $project->completed_at->format('d M Y') : '-' }}</span>
+                                <span class="font-mono font-medium text-slate-800">{{ $project->completed_at ? $project->completed_at->format('d M Y') : '-' }}</span>
                             </div>
                         </div>
                     </div>
@@ -103,7 +103,7 @@
                         @endif
 
                         @if($project->status->value === 'in_progress' || $project->progress_percentage == 100)
-                            <button wire:click="markCompleted" wire:confirm="Apakah Anda yakin ingin menandai proyek ini sebagai Selesai?" class="px-4 py-2 bg-verified hover:bg-green-700 text-white rounded-xl font-medium transition text-sm">
+                            <button @click="Swal.fire({ icon: 'question', title: 'Tandai Selesai?', text: 'Apakah Anda yakin ingin menandai proyek ini sebagai Selesai?', showCancelButton: true, confirmButtonText: 'Ya, Selesai', cancelButtonText: 'Batal', confirmButtonColor: '#16a34a', cancelButtonColor: '#64748b' }).then(r => { if (r.isConfirmed) $wire.markCompleted(); })" class="px-4 py-2 bg-verified hover:bg-green-700 text-white rounded-xl font-medium transition text-sm">
                                 Tandai Selesai
                             </button>
                         @endif

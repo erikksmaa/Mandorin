@@ -62,68 +62,17 @@
     </div>
 
     @if($project->status->value === 'pending')
-        <div class="flex gap-4">
-            <div x-data="{ showAcceptModal: false }">
-                <button @click="showAcceptModal = true" class="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition">
-                    Terima Proyek
-                </button>
-                
-                <!-- Accept Confirmation Modal -->
-                <div x-show="showAcceptModal" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
-                    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-                        <div x-show="showAcceptModal" @click="showAcceptModal = false" class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" aria-hidden="true"></div>
-                        <div class="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-                            <div class="sm:flex sm:items-start">
-                                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                                    <h3 class="text-lg font-medium leading-6 text-gray-900">Terima Proyek</h3>
-                                    <div class="mt-2">
-                                        <p class="text-sm text-gray-500">Apakah Anda yakin ingin menerima proyek ini? Anda akan mulai bertanggung jawab terhadap proyek ini.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                                <button type="button" wire:click="accept" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-green-600 border border-transparent rounded-xl shadow-sm hover:bg-green-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
-                                    Ya, Terima
-                                </button>
-                                <button type="button" @click="showAcceptModal = false" class="mt-3 inline-flex justify-center w-full px-4 py-2 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-xl shadow-sm hover:bg-gray-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
-                                    Batal
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div x-data="{ showRejectModal: false }">
-                <button @click="showRejectModal = true" class="px-6 py-2.5 bg-red-100 text-red-700 hover:bg-red-200 rounded-xl font-medium transition">
-                    Tolak
-                </button>
-                
-                <!-- Reject Confirmation Modal -->
-                <div x-show="showRejectModal" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
-                    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-                        <div x-show="showRejectModal" @click="showRejectModal = false" class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" aria-hidden="true"></div>
-                        <div class="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-                            <div class="sm:flex sm:items-start">
-                                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                                    <h3 class="text-lg font-medium leading-6 text-gray-900">Tolak Proyek</h3>
-                                    <div class="mt-2">
-                                        <p class="text-sm text-gray-500">Apakah Anda yakin ingin menolak permintaan proyek ini?</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                                <button type="button" wire:click="reject" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-red-600 border border-transparent rounded-xl shadow-sm hover:bg-red-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
-                                    Ya, Tolak
-                                </button>
-                                <button type="button" @click="showRejectModal = false" class="mt-3 inline-flex justify-center w-full px-4 py-2 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-xl shadow-sm hover:bg-gray-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
-                                    Batal
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="flex gap-3">
+            <button
+                @click="Swal.fire({ icon: 'question', title: 'Terima Proyek?', text: 'Anda akan bertanggung jawab atas proyek ini. Pastikan Anda siap sebelum melanjutkan.', showCancelButton: true, confirmButtonText: '✓ Ya, Terima', cancelButtonText: 'Batal', confirmButtonColor: '#16a34a', cancelButtonColor: '#64748b' }).then(r => { if (r.isConfirmed) { $wire.accept(); } })"
+                class="px-6 py-2.5 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white rounded-xl font-semibold transition shadow-sm">
+                Terima Proyek
+            </button>
+            <button
+                @click="Swal.fire({ icon: 'warning', title: 'Tolak Permintaan?', text: 'Permintaan dari klien ini akan ditolak dan klien akan diberi notifikasi. Tindakan ini tidak dapat dibatalkan.', showCancelButton: true, confirmButtonText: 'Ya, Tolak', cancelButtonText: 'Batal', confirmButtonColor: '#dc2626', cancelButtonColor: '#64748b' }).then(r => { if (r.isConfirmed) { $wire.reject(); } })"
+                class="px-6 py-2.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-xl font-semibold transition">
+                Tolak
+            </button>
         </div>
     @else
         <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center text-slate-600">

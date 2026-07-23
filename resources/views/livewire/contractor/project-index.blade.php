@@ -1,0 +1,103 @@
+<div>
+    <h1 class="text-2xl font-bold text-slate-800 mb-6" style="font-family: 'Big Shoulders Display', sans-serif;">
+        Kelola Proyek
+    </h1>
+
+    {{-- Search Bar --}}
+    <div class="mb-4 relative w-full sm:w-80">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
+        </div>
+        <input wire:model.live.debounce.300ms="search" type="text" class="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-xl focus:ring-navy focus:border-navy" placeholder="Cari judul proyek...">
+    </div>
+
+    {{-- Filter Chips --}}
+    <div class="flex flex-wrap gap-2 mb-6">
+        @php
+            $filters = [
+                '' => 'Semua',
+                'pending' => 'Menunggu',
+                'accepted' => 'Diterima',
+                'in_progress' => 'Berjalan',
+                'completed' => 'Selesai',
+                'rejected' => 'Ditolak',
+            ];
+        @endphp
+
+        @foreach($filters as $val => $label)
+            <button wire:click="setFilterStatus('{{ $val }}')" class="px-4 py-1.5 rounded-full text-sm font-medium transition {{ $filterStatus === $val ? 'bg-navy text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' }}">
+                {{ $label }}
+            </button>
+        @endforeach
+    </div>
+
+    <!-- Project List -->
+    <div class="space-y-4">
+        @forelse ($projects as $project)
+            <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-5">
+                <div class="flex flex-col md:flex-row md:items-center gap-4">
+                    <div class="w-full md:w-1/3">
+                        <span class="text-xs font-mono text-slate-500 mb-1 block">{{ $project->project_code }}</span>
+                        <h3 class="font-bold text-lg text-slate-800 line-clamp-1">{{ $project->title }}</h3>
+                        <span class="inline-block mt-2 px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md">
+                            {{ $project->service->name }}
+                        </span>
+                    </div>
+
+                    <div class="w-full md:w-1/3 flex flex-col justify-center border-t border-b md:border-y-0 md:border-x border-slate-100 py-3 md:py-0 md:px-4">
+                        <p class="text-sm text-slate-600 mb-1">
+                            <span class="font-medium">Pelanggan:</span> {{ $project->customer ? $project->customer->name : 'Tidak diketahui' }}
+                        </p>
+                        <p class="text-xs text-slate-500 line-clamp-1">
+                            📍 {{ $project->address }}
+                        </p>
+                        <p class="text-xs text-slate-400 mt-2">
+                            🗓️ Request: {{ $project->requested_at ? $project->requested_at->format('d M Y') : $project->created_at->format('d M Y') }}
+                        </p>
+                    </div>
+
+                    <div class="w-full md:w-1/3 flex flex-col items-start md:items-end justify-center">
+                        @php
+                            $statusColors = [
+                                'pending' => 'bg-amber-100 text-amber-700',
+                                'accepted' => 'bg-blue-100 text-blue-700',
+                                'in_progress' => 'bg-indigo-100 text-indigo-700',
+                                'completed' => 'bg-green-100 text-green-700',
+                                'rejected' => 'bg-red-100 text-red-700',
+                                'cancelled' => 'bg-slate-100 text-slate-700',
+                            ];
+                            // If project status is backed enum, project->status->value, else just project->status
+                            $statusVal = $project->status instanceof \BackedEnum ? $project->status->value : $project->status;
+                            $statusColor = $statusColors[$statusVal] ?? 'bg-slate-100 text-slate-700';
+                            $statusLabel = $project->status instanceof \BackedEnum ? $project->status->label() : ucfirst($statusVal);
+                        @endphp
+
+                        <div class="flex items-center justify-between w-full md:w-auto md:justify-end gap-4 mb-3">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-medium {{ $statusColor }}">
+                                {{ $statusLabel }}
+                            </span>
+                        </div>
+
+                        <div class="w-full md:w-32 bg-slate-100 rounded-full h-2 mb-3">
+                            <div class="bg-navy h-2 rounded-full" style="width: {{ $project->progress_percentage }}%"></div>
+                        </div>
+
+                        <a href="{{ route('contractor.projects.show', $project) }}" class="w-full md:w-auto px-4 py-2 text-sm border-2 border-orange-500 text-orange-500 hover:bg-orange-50 text-center rounded-xl font-medium transition block">
+                            Lihat Detail
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @empty
+            <x-empty-state
+                icon="project"
+                title="Belum ada proyek"
+                description="Proyek yang dikirimkan oleh pelanggan akan muncul di sini."
+            />
+        @endforelse
+    </div>
+
+    <div class="mt-6">
+        {{ $projects->links() }}
+    </div>
+</div>

@@ -16,6 +16,7 @@ class ProjectDetail extends Component
 {
     public Project $project;
     public string $activeTab = 'info';
+    public string $estimatedFinishDate = '';
 
     public function mount(Project $project): void
     {
@@ -24,6 +25,21 @@ class ProjectDetail extends Component
         }
 
         $this->project = $project->load(['customer', 'service', 'workers']);
+        $this->estimatedFinishDate = $project->estimated_finish_date ? $project->estimated_finish_date->format('Y-m-d') : '';
+    }
+
+    public function updateEstimatedFinishDate()
+    {
+        $this->validate([
+            'estimatedFinishDate' => 'required|date',
+        ]);
+
+        $this->project->update([
+            'estimated_finish_date' => $this->estimatedFinishDate,
+        ]);
+
+        $this->project->refresh();
+        $this->dispatch('swal-success', [['title' => 'Berhasil!', 'text' => 'Target selesai berhasil diperbarui.']]);
     }
 
     public function updateProgress(int $percentage)

@@ -10,6 +10,16 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
 
+Route::name('public.')->group(function () {
+    Route::get('/contractors', \App\Livewire\Public\ContractorIndex::class)->name('contractors.index');
+    Route::get('/contractors/{contractor}', \App\Livewire\Public\ContractorShow::class)->name('contractors.show');
+    
+    Route::get('/portfolios', \App\Livewire\Public\PortfolioIndex::class)->name('portfolios.index');
+    Route::get('/portfolios/{portfolio}', \App\Livewire\Public\PortfolioShow::class)->name('portfolios.show');
+    
+    Route::get('/search', \App\Livewire\Public\SearchResults::class)->name('search');
+});
+
 /*
 |--------------------------------------------------------------------------
 | Role-Based Routes (dipisah ke file masing-masing)

@@ -19,6 +19,7 @@ class Profile extends Component
     public $profilePhoto;
     public $identityDocument;
     public $certificateDocument;
+    public $selectedServices = [];
 
     public function mount()
     {
@@ -33,6 +34,7 @@ class Profile extends Component
 
         $this->bio = $profile->bio;
         $this->address = $profile->address;
+        $this->selectedServices = $profile->services->pluck('id')->toArray();
     }
 
     public function save()
@@ -43,6 +45,7 @@ class Profile extends Component
             'profilePhoto' => 'nullable|image|max:2048',
             'identityDocument' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
             'certificateDocument' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:4096',
+            'selectedServices' => 'array',
         ]);
 
         $profile = auth()->user()->contractorProfile;
@@ -58,8 +61,6 @@ class Profile extends Component
 
         if ($this->identityDocument) {
             $data['identity_document'] = $this->identityDocument->store('documents', 'public');
-            // reset verification if identity changes?
-            // $data['verification_status'] = 'pending';
         }
 
         if ($this->certificateDocument) {
@@ -67,18 +68,24 @@ class Profile extends Component
         }
 
         $profile->update($data);
+        
+        if (is_array($this->selectedServices)) {
+            $profile->services()->sync($this->selectedServices);
+        }
 
-        session()->flash('success', 'Profil berhasil diperbarui.');
+        $this->dispatch('swal-success', title: 'Profil Diperbarui!', text: 'Profil dan layanan Anda berhasil disimpan.');
     }
 
     public function render()
     {
         $user = auth()->user();
         $profile = $user->contractorProfile()->with('portfolios', 'services')->first();
+        $allServices = \App\Models\Service::all();
 
         return view('livewire.contractor.profile', [
             'user' => $user,
             'profile' => $profile,
+            'allServices' => $allServices,
         ]);
     }
 }

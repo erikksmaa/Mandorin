@@ -1,8 +1,8 @@
 <div>
     <div class="mb-4 text-sm text-slate-500">
-        <a href="{{ route('customer.contractors.index') }}" class="hover:text-navy">Cari Kontraktor</a>
+        <a href="{{ route('public.contractors.index') }}" class="hover:text-navy">Cari Kontraktor</a>
         <span class="mx-2">&rsaquo;</span>
-        <a href="{{ route('customer.contractors.show', $contractorProfile) }}" class="hover:text-navy">Profil</a>
+        <a href="{{ route('public.contractors.show', $contractorProfile) }}" class="hover:text-navy">Profil</a>
         <span class="mx-2">&rsaquo;</span>
         <span class="text-slate-700">Ajukan Proyek</span>
     </div>
@@ -48,6 +48,13 @@
                     <label for="address" class="block text-sm font-medium text-slate-700 mb-1">Alamat Proyek *</label>
                     <textarea id="address" wire:model="address" rows="3" placeholder="Alamat lengkap lokasi proyek..." class="w-full rounded-xl border-slate-300 focus:border-navy focus:ring-navy shadow-sm"></textarea>
                     @error('address') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                </div>
+
+                <div>
+                    <label for="estimatedFinishDate" class="block text-sm font-medium text-slate-700 mb-1">Target Selesai (Opsional)</label>
+                    <input type="date" id="estimatedFinishDate" wire:model="estimatedFinishDate" class="w-full rounded-xl border-slate-300 focus:border-navy focus:ring-navy shadow-sm text-sm">
+                    <span class="text-xs text-slate-400 mt-1 block">Estimasi tanggal penyelesaian proyek yang diharapkan.</span>
+                    @error('estimatedFinishDate') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="pt-4 border-t border-slate-100">

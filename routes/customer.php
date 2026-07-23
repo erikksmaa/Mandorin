@@ -16,12 +16,6 @@ Route::middleware(['auth', 'verified', 'role:customer'])
         Route::get('/dashboard', Dashboard::class)
             ->name('dashboard');
 
-        Route::get('/cari-kontraktor', ContractorSearch::class)
-            ->name('contractors.index');
-
-        Route::get('/kontraktor/{contractorProfile}', ContractorProfile::class)
-            ->name('contractors.show');
-
         Route::get('/sewa/{contractorProfile}', HireForm::class)
             ->name('hire.create');
 

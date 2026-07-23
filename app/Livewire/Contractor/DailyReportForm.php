@@ -33,13 +33,28 @@ class DailyReportForm extends Component
 
     public function save()
     {
-        $this->validate([
-            'date' => 'required|date',
-            'progressPercentage' => 'required|integer|min:0|max:100',
-            'notes' => 'required|string',
-            'beforePhoto' => 'nullable|image|max:2048',
-            'afterPhoto' => 'nullable|image|max:2048',
-        ]);
+        $this->validate(
+            [
+                'date'               => 'required|date|before_or_equal:today',
+                'progressPercentage' => 'required|integer|min:0|max:100',
+                'notes'              => 'required|string|min:10',
+                'beforePhoto'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+                'afterPhoto'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            ],
+            [
+                'date.required'               => 'Tanggal laporan wajib diisi.',
+                'date.before_or_equal'        => 'Tanggal laporan tidak boleh melebihi hari ini.',
+                'progressPercentage.required' => 'Persentase progres wajib diisi.',
+                'progressPercentage.min'      => 'Progres tidak boleh kurang dari 0%.',
+                'progressPercentage.max'      => 'Progres tidak boleh melebihi 100%.',
+                'notes.required'              => 'Catatan harian wajib diisi.',
+                'notes.min'                   => 'Catatan minimal 10 karakter.',
+                'beforePhoto.image'           => 'File foto sebelum harus berupa gambar.',
+                'beforePhoto.max'             => 'Ukuran foto sebelum maksimal 2MB.',
+                'afterPhoto.image'            => 'File foto sesudah harus berupa gambar.',
+                'afterPhoto.max'              => 'Ukuran foto sesudah maksimal 2MB.',
+            ]
+        );
 
         $exists = DailyReport::where('project_id', $this->project->id)
             ->where('date', $this->date)
@@ -80,8 +95,8 @@ class DailyReportForm extends Component
             ]);
         }
 
-        session()->flash('success', 'Laporan harian berhasil disimpan.');
-        return redirect()->route('contractor.projects.show', $this->project->id);
+        $this->dispatch('swal-success', title: 'Laporan Tersimpan!', text: 'Laporan harian berhasil disimpan.');
+        return redirect()->route('contractor.projects.show', $this->project->id)->with('swal_redirect', 'success');
     }
 
     public function render()

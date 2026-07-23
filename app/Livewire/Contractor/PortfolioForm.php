@@ -38,12 +38,23 @@ class PortfolioForm extends Component
 
     public function save()
     {
-        $this->validate([
-            'title' => 'required|string|max:100',
-            'description' => 'nullable|string',
-            'beforePhoto' => 'nullable|image|max:4096',
-            'afterPhoto' => 'nullable|image|max:4096',
-        ]);
+        $this->validate(
+            [
+                'title'       => 'required|string|min:5|max:100',
+                'description' => 'nullable|string|max:500',
+                'beforePhoto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+                'afterPhoto'  => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+            ],
+            [
+                'title.required' => 'Judul portofolio wajib diisi.',
+                'title.min'      => 'Judul portofolio minimal 5 karakter.',
+                'title.max'      => 'Judul portofolio maksimal 100 karakter.',
+                'beforePhoto.image' => 'File foto sebelum harus berupa gambar.',
+                'beforePhoto.max'   => 'Ukuran foto sebelum maksimal 4MB.',
+                'afterPhoto.image'  => 'File foto sesudah harus berupa gambar.',
+                'afterPhoto.max'    => 'Ukuran foto sesudah maksimal 4MB.',
+            ]
+        );
 
         $data = [
             'title' => $this->title,
@@ -67,7 +78,7 @@ class PortfolioForm extends Component
             $msg = 'Portfolio baru berhasil ditambahkan.';
         }
 
-        session()->flash('success', $msg);
+        $this->dispatch('swal-success', title: 'Portofolio Disimpan!', text: $msg);
         return redirect()->route('contractor.profile.show');
     }
 
@@ -75,7 +86,7 @@ class PortfolioForm extends Component
     {
         if ($this->isEditing) {
             $this->portfolio->delete();
-            session()->flash('success', 'Portfolio berhasil dihapus.');
+            $this->dispatch('swal-success', title: 'Portofolio Dihapus!', text: 'Portofolio berhasil dihapus.');
             return redirect()->route('contractor.profile.show');
         }
     }

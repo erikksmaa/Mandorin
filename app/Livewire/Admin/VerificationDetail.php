@@ -34,8 +34,7 @@ class VerificationDetail extends Component
             'is_read' => false,
         ]);
 
-        session()->flash('status', 'Kontraktor berhasil diverifikasi.');
-        return redirect()->route('admin.verification.index');
+        return redirect()->route('admin.verification.index')->with('swal_success', 'Kontraktor berhasil diverifikasi.');
     }
 
     public function reject()
@@ -52,8 +51,7 @@ class VerificationDetail extends Component
             'is_read' => false,
         ]);
 
-        session()->flash('status', 'Kontraktor ditolak.');
-        return redirect()->route('admin.verification.index');
+        return redirect()->route('admin.verification.index')->with('swal_error', 'Kontraktor berhasil ditolak.');
     }
 
     public function render()

@@ -15,6 +15,12 @@ class MyProjects extends Component
     use WithPagination;
 
     public $filterStatus = '';
+    public $search = '';
+
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
 
     public function setFilterStatus($status)
     {
@@ -30,6 +36,10 @@ class MyProjects extends Component
 
         if (!empty($this->filterStatus)) {
             $query->where('status', $this->filterStatus);
+        }
+
+        if (!empty($this->search)) {
+            $query->where('title', 'like', '%' . $this->search . '%');
         }
 
         $projects = $query->paginate(10);

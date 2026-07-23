@@ -33,7 +33,7 @@ class PaymentConfirm extends Component
         ]);
 
         $this->project->refresh();
-        session()->flash('payment_success', 'Pembayaran berhasil dikonfirmasi.');
+        $this->dispatch('swal-success', title: 'Pembayaran Dikonfirmasi!', text: 'Status pembayaran berhasil diperbarui.');
     }
 
     public function rejectPayment($paymentLogId)
@@ -53,7 +53,7 @@ class PaymentConfirm extends Component
         ]);
 
         $this->project->refresh();
-        session()->flash('payment_error', 'Pembayaran telah ditolak.');
+        $this->dispatch('swal-error', title: 'Pembayaran Ditolak', text: 'Bukti pembayaran ditolak. Kontraktor akan diberitahu.');
     }
 
     public function render()

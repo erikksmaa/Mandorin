@@ -10,14 +10,16 @@ new class extends Component
 {
     public string $name = '';
     public string $email = '';
+    public string $phone = '';
 
     /**
      * Mount the component.
      */
     public function mount(): void
     {
-        $this->name = Auth::user()->name;
+        $this->name  = Auth::user()->name;
         $this->email = Auth::user()->email;
+        $this->phone = Auth::user()->phone ?? '';
     }
 
     /**
@@ -27,10 +29,20 @@ new class extends Component
     {
         $user = Auth::user();
 
-        $validated = $this->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
-        ]);
+        $validated = $this->validate(
+            [
+                'name'  => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+                'phone' => ['nullable', 'string', 'max:20'],
+            ],
+            [
+                'name.required'  => 'Nama lengkap wajib diisi.',
+                'email.required' => 'Alamat email wajib diisi.',
+                'email.email'    => 'Format email tidak valid.',
+                'email.unique'   => 'Email ini sudah digunakan oleh akun lain.',
+                'phone.max'      => 'Nomor HP maksimal 20 karakter.',
+            ]
+        );
 
         $user->fill($validated);
 
@@ -40,7 +52,7 @@ new class extends Component
 
         $user->save();
 
-        $this->dispatch('profile-updated', name: $user->name);
+        $this->dispatch('swal-success', title: 'Profil Diperbarui!', text: 'Informasi akun Anda berhasil disimpan.');
     }
 
     /**
@@ -52,64 +64,68 @@ new class extends Component
 
         if ($user->hasVerifiedEmail()) {
             $this->redirectIntended(default: route('dashboard', absolute: false));
-
             return;
         }
 
         $user->sendEmailVerificationNotification();
-
         Session::flash('status', 'verification-link-sent');
     }
 }; ?>
 
+
+
 <section>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Profile Information') }}
-        </h2>
-
-        <p class="mt-1 text-sm text-gray-600">
-            {{ __("Update your account's profile information and email address.") }}
-        </p>
-    </header>
-
-    <form wire:submit="updateProfileInformation" class="mt-6 space-y-6">
+    <form wire:submit="updateProfileInformation" class="space-y-5">
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
+            <label for="name" class="block text-sm font-medium text-slate-700 mb-1">Nama Lengkap *</label>
+            <input wire:model="name" id="name" name="name" type="text"
+                   class="w-full rounded-xl border-slate-300 focus:border-navy focus:ring-navy shadow-sm"
+                   required autofocus autocomplete="name">
+            @error('name') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
         </div>
 
         <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="email" id="email" name="email" type="email" class="mt-1 block w-full" required autocomplete="username" />
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
+            <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Alamat Email *</label>
+            <input wire:model="email" id="email" name="email" type="email"
+                   class="w-full rounded-xl border-slate-300 focus:border-navy focus:ring-navy shadow-sm"
+                   required autocomplete="username">
+            @error('email') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
 
             @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
-                <div>
-                    <p class="text-sm mt-2 text-gray-800">
-                        {{ __('Your email address is unverified.') }}
-
-                        <button wire:click.prevent="sendVerification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            {{ __('Click here to re-send the verification email.') }}
+                <div class="mt-2">
+                    <p class="text-sm text-slate-700">
+                        Email belum terverifikasi.
+                        <button wire:click.prevent="sendVerification" class="underline text-sm text-orange-500 hover:text-orange-700">
+                            Kirim ulang email verifikasi.
                         </button>
                     </p>
-
                     @if (session('status') === 'verification-link-sent')
                         <p class="mt-2 font-medium text-sm text-green-600">
-                            {{ __('A new verification link has been sent to your email address.') }}
+                            Link verifikasi baru telah dikirim ke email Anda.
                         </p>
                     @endif
                 </div>
             @endif
         </div>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+        <div>
+            <label for="phone" class="block text-sm font-medium text-slate-700 mb-1">Nomor HP / WhatsApp</label>
+            <div class="flex">
+                <span class="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-slate-300 bg-slate-50 text-slate-500 text-sm">+62</span>
+                <input wire:model="phone" id="phone" name="phone" type="tel" placeholder="81234567890"
+                       class="flex-1 rounded-r-xl border-slate-300 focus:border-navy focus:ring-navy shadow-sm"
+                       autocomplete="tel">
+            </div>
+            <p class="text-xs text-slate-400 mt-1">Nomor ini digunakan untuk fitur Chat via WhatsApp dengan pelanggan.</p>
+            @error('phone') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+        </div>
 
-            <x-action-message class="me-3" on="profile-updated">
-                {{ __('Saved.') }}
-            </x-action-message>
+        <div class="pt-2">
+            <button type="submit"
+                    class="px-6 py-2.5 bg-navy hover:bg-navy/90 text-white text-sm font-semibold rounded-xl transition shadow-sm">
+                <span wire:loading.remove wire:target="updateProfileInformation">Simpan Perubahan</span>
+                <span wire:loading wire:target="updateProfileInformation">Menyimpan...</span>
+            </button>
         </div>
     </form>
 </section>

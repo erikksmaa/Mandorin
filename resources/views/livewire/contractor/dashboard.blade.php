@@ -1,43 +1,46 @@
 <div>
-    <h1 class="text-2xl font-bold text-slate-800 mb-6" style="font-family: 'Big Shoulders Display', sans-serif;">
-        Dashboard Kontraktor
-    </h1>
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-slate-800" style="font-family: 'Big Shoulders Display', sans-serif;">
+            Selamat datang, {{ auth()->user()->name }}!
+        </h1>
+        <p class="text-slate-500 text-sm">Kelola permintaan proyek dan pekerjaan aktif Anda.</p>
+    </div>
 
     @if($contractorProfile && $contractorProfile->verification_status?->value !== 'verified')
         <div class="mb-6 px-4 py-3 bg-amber-100 text-amber-700 rounded-xl border border-amber-200">
             <div class="flex justify-between items-center">
                 <span>Status profil Anda saat ini adalah <strong>{{ $contractorProfile->verification_status?->label() ?? 'Pending' }}</strong>. Beberapa fitur mungkin dibatasi sampai profil Anda diverifikasi.</span>
-                <a href="{{ route('profile.edit') }}" class="text-sm font-medium underline">Lihat Profil</a>
+                <a href="{{ route('profile') }}" class="text-sm font-medium underline">Lihat Profil</a>
             </div>
         </div>
     @endif
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-5">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+        <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-5 border-l-4 border-l-orange-500">
             <h3 class="text-sm font-medium text-slate-500 mb-1">Permintaan Masuk</h3>
-            <div class="text-3xl font-bold text-orange-500">{{ $stats['pending'] }}</div>
+            <div class="text-3xl font-bold font-mono text-slate-800">{{ $stats['pending'] }}</div>
         </div>
-        <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-5">
+        <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-5 border-l-4 border-l-navy">
             <h3 class="text-sm font-medium text-slate-500 mb-1">Proyek Aktif</h3>
-            <div class="text-3xl font-bold text-navy">{{ $stats['active'] }}</div>
+            <div class="text-3xl font-bold font-mono text-slate-800">{{ $stats['active'] }}</div>
         </div>
-        <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-5">
+        <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-5 border-l-4 border-l-green-500">
             <h3 class="text-sm font-medium text-slate-500 mb-1">Selesai</h3>
-            <div class="text-3xl font-bold text-green-600">{{ $stats['completed'] }}</div>
+            <div class="text-3xl font-bold font-mono text-slate-800">{{ $stats['completed'] }}</div>
         </div>
     </div>
 
     <div class="mb-8">
-        <h2 class="text-xl font-bold text-slate-800 mb-4" style="font-family: 'Big Shoulders Display', sans-serif;">Permintaan Masuk</h2>
+        <h2 class="text-lg font-bold text-slate-800 mb-4" style="font-family: 'Big Shoulders Display', sans-serif;">Permintaan Masuk</h2>
         
         @if($pendingRequests->isEmpty())
-            <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-8 text-center text-slate-500">
+            <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-8 text-center text-sm text-slate-500">
                 Belum ada permintaan masuk saat ini.
             </div>
         @else
             <div class="space-y-4">
                 @foreach($pendingRequests as $project)
-                <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-5">
+                <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-5">
                     <div class="flex flex-col md:flex-row md:items-start gap-4 justify-between">
                         <div>
                             <h3 class="font-bold text-slate-800 text-lg">{{ $project->title }}</h3>
@@ -65,16 +68,16 @@
     </div>
 
     <div>
-        <h2 class="text-xl font-bold text-slate-800 mb-4" style="font-family: 'Big Shoulders Display', sans-serif;">Proyek Aktif</h2>
+        <h2 class="text-lg font-bold text-slate-800 mb-4" style="font-family: 'Big Shoulders Display', sans-serif;">Proyek Aktif</h2>
         
         @if($activeProjects->isEmpty())
-            <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-8 text-center text-slate-500">
+            <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-8 text-center text-sm text-slate-500">
                 Tidak ada proyek aktif saat ini.
             </div>
         @else
             <div class="space-y-4">
                 @foreach($activeProjects as $project)
-                <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-5">
+                <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-5">
                     <div class="flex flex-col md:flex-row md:items-center gap-4 justify-between">
                         <div class="flex-grow">
                             <div class="flex items-center gap-3 mb-1">

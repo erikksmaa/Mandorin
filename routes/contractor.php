@@ -5,6 +5,7 @@ use App\Livewire\Contractor\DailyReportForm;
 use App\Livewire\Contractor\PortfolioForm;
 use App\Livewire\Contractor\Profile;
 use App\Livewire\Contractor\ProjectDetail;
+use App\Livewire\Contractor\ProjectIndex;
 use App\Livewire\Contractor\RequestDetail;
 use App\Livewire\Contractor\WorkerForm;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +20,9 @@ Route::middleware(['auth', 'verified', 'role:contractor'])
 
         Route::get('/permintaan/{project}', RequestDetail::class)
             ->name('requests.show');
+
+        Route::get('/proyek', ProjectIndex::class)
+            ->name('projects.index');
 
         Route::get('/proyek/{project}', ProjectDetail::class)
             ->name('projects.show');

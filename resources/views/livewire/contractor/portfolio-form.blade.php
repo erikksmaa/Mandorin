@@ -10,7 +10,7 @@
         {{ $isEditing ? 'Edit Portfolio' : 'Tambah Portfolio' }}
     </h1>
 
-    <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6">
+    <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-6">
         <form wire:submit="save">
             <div class="space-y-6">
                 <!-- Title -->
@@ -63,7 +63,7 @@
 
                 <div class="pt-4 flex justify-between items-center border-t border-slate-100">
                     @if($isEditing)
-                        <button type="button" wire:click="deletePortfolio" wire:confirm="Apakah Anda yakin ingin menghapus portfolio ini?" class="px-4 py-2 bg-red-100 text-red-700 hover:bg-red-200 rounded-xl text-sm font-medium transition">
+                        <button type="button" @click="Swal.fire({ icon: 'warning', title: 'Hapus Portfolio?', text: 'Apakah Anda yakin ingin menghapus portfolio ini?', showCancelButton: true, confirmButtonText: 'Ya, Hapus', cancelButtonText: 'Batal', confirmButtonColor: '#ef4444', cancelButtonColor: '#64748b' }).then(r => { if (r.isConfirmed) $wire.deletePortfolio(); })" class="px-4 py-2 bg-red-100 text-red-700 hover:bg-red-200 rounded-xl text-sm font-medium transition">
                             Hapus Portfolio
                         </button>
                     @else

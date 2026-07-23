@@ -27,6 +27,20 @@ class UserManagement extends Component
         $this->resetPage();
     }
 
+    public function deleteUser($id)
+    {
+        $user = User::findOrFail($id);
+        
+        // Prevent deleting admin
+        if ($user->role?->value === 'admin') {
+            $this->dispatch('swal-error', title: 'Tidak Diizinkan!', text: 'Akun admin tidak dapat dihapus.');
+            return;
+        }
+
+        $user->delete();
+        $this->dispatch('swal-success', title: 'Pengguna Dihapus!', text: 'Data pengguna berhasil dihapus.');
+    }
+
     public function render()
     {
         $query = User::query();

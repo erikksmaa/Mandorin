@@ -93,10 +93,25 @@
                                 <div>
                                     <p class="font-bold text-slate-800">{{ $project->contractor ? $project->contractor->name : 'Belum ditentukan' }}</p>
                                     @if($project->contractor && $project->contractor->contractorProfile)
-                                        <a href="{{ route('customer.contractors.show', $project->contractor->contractorProfile) }}" class="text-xs text-orange-500 hover:underline">Lihat Profil</a>
+                                        <a href="{{ route('public.contractors.show', $project->contractor->contractorProfile) }}" class="text-xs text-orange-500 hover:underline">Lihat Profil</a>
                                     @endif
                                 </div>
                             </div>
+                            {{-- Tombol Chat via WA --}}
+                            @if($project->contractor && $project->contractor->phone)
+                                @php
+                                    $waPhone = preg_replace('/[^0-9]/', '', $project->contractor->phone);
+                                    if (str_starts_with($waPhone, '0')) $waPhone = '62' . substr($waPhone, 1);
+                                    $waMsg = "Halo Bapak/Ibu *{$project->contractor->name}*, saya *" . auth()->user()->name . "* ingin menghubungi Anda terkait proyek:\n\n*{$project->title}*\nKode: {$project->project_code}\nLayanan: {$project->service?->name}\n\nMohon konfirmasinya, terima kasih! 🙏";
+                                    $waUrl = 'https://wa.me/' . $waPhone . '?text=' . urlencode($waMsg);
+                                @endphp
+                                <a href="{{ $waUrl }}" target="_blank" rel="noopener"
+                                   class="mt-3 flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.533 5.854L0 24l6.293-1.51C8.037 23.472 9.981 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.892 0-3.658-.516-5.168-1.414l-.37-.22-3.734.896.937-3.627-.242-.378A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+                                    Chat Mandor via WhatsApp
+                                </a>
+                            @endif
+                        </div>
                         </div>
 
                         <div>
@@ -116,7 +131,7 @@
 
                         @if($project->status === \App\Enums\ProjectStatus::Pending)
                             <div class="pt-4 border-t border-slate-100">
-                                <button wire:click="cancel" wire:confirm="Apakah Anda yakin ingin membatalkan pengajuan proyek ini?" class="w-full py-2 px-4 bg-white border-2 border-red-500 text-red-600 hover:bg-red-50 rounded-xl font-medium transition text-sm">
+                                <button @click="Swal.fire({ icon: 'warning', title: 'Batalkan Pengajuan?', text: 'Apakah Anda yakin ingin membatalkan pengajuan proyek ini?', showCancelButton: true, confirmButtonText: 'Ya, Batalkan', cancelButtonText: 'Batal', confirmButtonColor: '#dc2626', cancelButtonColor: '#64748b' }).then(r => { if (r.isConfirmed) $wire.cancel(); })" class="w-full py-2 px-4 bg-white border-2 border-red-500 text-red-600 hover:bg-red-50 rounded-xl font-medium transition text-sm">
                                     Batalkan Pengajuan
                                 </button>
                             </div>

@@ -3,7 +3,15 @@
         Proyek Saya
     </h1>
 
-    <!-- Filter Chips -->
+    {{-- Search Bar --}}
+    <div class="mb-4 relative w-full sm:w-80">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
+        </div>
+        <input wire:model.live.debounce.300ms="search" type="text" class="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-xl focus:ring-navy focus:border-navy" placeholder="Cari judul proyek...">
+    </div>
+
+    {{-- Filter Chips --}}
     <div class="flex flex-wrap gap-2 mb-6">
         @php
             $filters = [
@@ -26,7 +34,7 @@
     <!-- Project List -->
     <div class="space-y-4">
         @forelse ($projects as $project)
-            <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-5">
+            <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-5">
                 <div class="flex flex-col md:flex-row md:items-center gap-4">
                     <div class="w-full md:w-1/3">
                         <span class="text-xs font-mono text-slate-500 mb-1 block">{{ $project->project_code }}</span>
@@ -78,12 +86,14 @@
                 </div>
             </div>
         @empty
-            <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-10 text-center text-slate-500">
-                <div class="text-4xl mb-3">📋</div>
-                <p>Belum ada proyek yang sesuai.</p>
-                <a href="{{ route('customer.contractors.index') }}" class="inline-block mt-4 text-orange-500 font-medium hover:underline">
-                    Cari Kontraktor Sekarang
-                </a>
+            <div class="bg-white border border-slate-200 shadow-sm rounded-xl">
+                <x-empty-state
+                    icon="project"
+                    title="Belum ada proyek"
+                    description="Anda belum memiliki proyek. Mulai cari kontraktor dan ajukan pesanan pertama Anda."
+                    action-url="{{ route('public.contractors.index') }}"
+                    action-label="Cari Kontraktor"
+                />
             </div>
         @endforelse
     </div>

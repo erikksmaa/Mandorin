@@ -51,7 +51,7 @@ class ProjectDetail extends Component
                 }
             ]);
 
-            session()->flash('success', 'Proyek berhasil dibatalkan.');
+            $this->dispatch('swal-success', title: 'Proyek Dibatalkan', text: 'Proyek Anda berhasil dibatalkan.');
         }
     }
 

@@ -9,8 +9,14 @@
     </div>
 
     @if($reports->isEmpty())
-        <div class="bg-slate-50 border border-slate-200 border-dashed rounded-2xl p-8 text-center">
-            <p class="text-slate-500 mb-4">Belum ada laporan harian untuk proyek ini.</p>
+        <div class="bg-white border border-slate-200 rounded-xl shadow-sm">
+            <x-empty-state
+                icon="report"
+                title="Belum ada laporan harian"
+                description="Belum ada laporan harian untuk proyek ini. Mulai tambahkan laporan untuk memantau progres pekerjaan."
+                action-url="{{ route('contractor.reports.create', $project->id) }}"
+                action-label="Tambah Laporan Pertama"
+            />
         </div>
     @else
         <div class="relative">

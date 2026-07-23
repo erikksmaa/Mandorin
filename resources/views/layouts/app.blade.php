@@ -20,6 +20,8 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 
 <body class="font-sans antialiased bg-slate-50">
@@ -43,12 +45,75 @@
         </main>
 
         <!-- Footer -->
-        <footer class="bg-navy text-white/60 text-center text-xs py-4 mt-8">
-            &copy; {{ date('Y') }} Mandorin — Platform Digital Konstruksi Indonesia
-        </footer>
+        <div class="mt-8">
+            <x-public.footer />
+        </div>
     </div>
 
     @livewireScripts
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const swalConfig = {
+            confirmButtonColor: '#0f172a',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Ya, Lanjutkan',
+            cancelButtonText: 'Batal',
+        };
+
+        // Listen for Livewire-dispatched SweetAlert events
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('swal-success', (data) => {
+                Swal.fire({
+                    icon: 'success',
+                    title: data[0]?.title ?? 'Berhasil!',
+                    text: data[0]?.text ?? '',
+                    timer: 2500,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end',
+                    ...swalConfig,
+                });
+            });
+
+            Livewire.on('swal-error', (data) => {
+                Swal.fire({
+                    icon: 'error',
+                    title: data[0]?.title ?? 'Gagal!',
+                    text: data[0]?.text ?? '',
+                    ...swalConfig,
+                });
+            });
+
+            Livewire.on('swal-confirm', (data) => {
+                Swal.fire({
+                    icon: 'warning',
+                    title: data[0]?.title ?? 'Konfirmasi',
+                    text: data[0]?.text ?? 'Apakah Anda yakin?',
+                    showCancelButton: true,
+                    ...swalConfig,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Livewire.find(data[0]?.componentId)?.call(data[0]?.method, ...(data[0]?.params ?? []));
+                    }
+                });
+            });
+        });
+        // Handle post-redirect SweetAlert notifications from session
+        const checkSessionSwal = () => {
+            @if(session('swal_success'))
+                Swal.fire({ icon: 'success', title: 'Berhasil!', text: @json(session('swal_success')), timer: 2500, showConfirmButton: false, toast: true, position: 'top-end', ...swalConfig });
+            @endif
+            @if(session('swal_error'))
+                Swal.fire({ icon: 'error', title: 'Gagal!', text: @json(session('swal_error')), ...swalConfig });
+            @endif
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', checkSessionSwal);
+        } else {
+            checkSessionSwal();
+        }
+    </script>
 </body>
 
 </html>
