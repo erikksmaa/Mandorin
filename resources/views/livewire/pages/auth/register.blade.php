@@ -1,7 +1,6 @@
 <?php
 
-use App\Enums\UserRole;
-use App\Models\ContractorProfile;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
@@ -38,26 +37,25 @@ new #[Layout('layouts.guest-public')] class extends Component {
             ],
         );
 
-        $validated['password'] = Hash::make($validated['password']);
+        $roleSlug = $validated['role'] === 'contractor' ? 'leader' : 'verifikator';
+        $roleModel = Role::where('slug', $roleSlug)->first() ?? Role::firstOrCreate(['slug' => $roleSlug], ['name' => ucfirst($roleSlug)]);
 
-        event(new Registered(($user = User::create($validated))));
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'] ?? null,
+            'password' => Hash::make($validated['password']),
+            'role_id' => $roleModel?->id,
+        ]);
 
-        $roleValue = $user->role instanceof UserRole ? $user->role->value : $user->role;
-
-        if ($roleValue === 'contractor') {
-            ContractorProfile::create([
-                'user_id' => $user->id,
-                'address' => '',
-                'verification_status' => 'pending',
-            ]);
-        }
+        event(new Registered($user));
 
         Auth::login($user);
 
         $this->redirect(
-            match ($roleValue) {
-                'contractor' => route('contractor.dashboard', absolute: false),
-                default => route('customer.dashboard', absolute: false),
+            match ($roleSlug) {
+                'leader' => route('leader.dashboard', absolute: false),
+                default => route('verifier.dashboard', absolute: false),
             },
             navigate: true,
         );
@@ -77,8 +75,6 @@ new #[Layout('layouts.guest-public')] class extends Component {
     <div class="fixed -bottom-40 -left-40 w-96 h-96 bg-navy-100 rounded-full blur-3xl opacity-20 pointer-events-none"
         aria-hidden="true"></div>
 
-
-
     {{-- Main Card --}}
     <div class="relative flex-1 flex items-start justify-center px-4 sm:px-6 pb-8">
         <div class="w-full max-w-md bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 p-8 mt-4">
@@ -91,7 +87,7 @@ new #[Layout('layouts.guest-public')] class extends Component {
                 </h1>
                 <div class="relative mb-3 mt-1 flex justify-center">
                     <a href="{{ route('home') }}" wire:navigate class="flex items-center gap-2 group">
-                        <img src="{{ asset('logo.png') }}" alt="Mandorin Logo" class="w-[150px] object-contain">
+                        <img src="{{ asset('logo.png') }}" alt="SIPORA Logo" class="w-[150px] object-contain">
                     </a>
                 </div>
                 <p class="text-slate-500 text-sm mt-1">Gratis, cepat, dan aman. Mulai dalam 2 menit.</p>
@@ -105,7 +101,7 @@ new #[Layout('layouts.guest-public')] class extends Component {
                         Daftar Sebagai
                     </label>
                     <div class="grid grid-cols-2 gap-3">
-                        {{-- Customer --}}
+                        {{-- Verifikator --}}
                         <label for="role_customer"
                             class="relative flex flex-col gap-2 p-4 border-2 rounded-xl cursor-pointer transition-all select-none"
                             :class="role === 'customer' ? 'border-navy bg-navy/[0.03] shadow-sm' :
@@ -122,10 +118,9 @@ new #[Layout('layouts.guest-public')] class extends Component {
                                     </svg>
                                 </div>
                                 <span class="font-bold text-sm transition-all"
-                                    :class="role === 'customer' ? 'text-navy' : 'text-slate-600'">Pelanggan</span>
+                                    :class="role === 'customer' ? 'text-navy' : 'text-slate-600'">Verifikator</span>
                             </div>
-                            <p class="text-xs text-slate-500 leading-tight">Cari & pesan kontraktor untuk proyek Anda
-                            </p>
+                            <p class="text-xs text-slate-500 leading-tight">Verifikasi & evaluasi program kepemudaan</p>
                             <div x-show="role === 'customer'" x-transition.scale
                                 class="absolute top-2 right-2 w-4 h-4 bg-navy rounded-full flex items-center justify-center">
                                 <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20"
@@ -137,7 +132,7 @@ new #[Layout('layouts.guest-public')] class extends Component {
                             </div>
                         </label>
 
-                        {{-- Contractor --}}
+                        {{-- Contractor -> Leader --}}
                         <label for="role_contractor"
                             class="relative flex flex-col gap-2 p-4 border-2 rounded-xl cursor-pointer transition-all select-none"
                             :class="role === 'contractor' ? 'border-orange-500 bg-orange-50 shadow-sm' :
@@ -155,9 +150,9 @@ new #[Layout('layouts.guest-public')] class extends Component {
                                     </svg>
                                 </div>
                                 <span class="font-bold text-sm transition-all"
-                                    :class="role === 'contractor' ? 'text-orange-600' : 'text-slate-600'">Mandor</span>
+                                    :class="role === 'contractor' ? 'text-orange-600' : 'text-slate-600'">Ketua Pelaksana</span>
                             </div>
-                            <p class="text-xs text-slate-500 leading-tight">Terima proyek & kelola tim kerja Anda</p>
+                            <p class="text-xs text-slate-500 leading-tight">Kelola organisasi & ajukan program</p>
                             <div x-show="role === 'contractor'" x-transition.scale
                                 class="absolute top-2 right-2 w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
                                 <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20"
@@ -172,22 +167,6 @@ new #[Layout('layouts.guest-public')] class extends Component {
                     @error('role')
                         <p class="mt-1.5 text-xs text-danger-600">{{ $message }}</p>
                     @enderror
-                </div>
-
-                {{-- Info untuk Mandor --}}
-                <div x-show="role === 'contractor'" x-transition
-                    class="flex gap-3 bg-amber-50 border border-amber-200 rounded-xl p-3">
-                    <svg class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <div>
-                        <p class="text-xs font-semibold text-amber-800">Perlu Verifikasi Admin</p>
-                        <p class="text-xs text-amber-700 mt-0.5 leading-relaxed">
-                            Setelah mendaftar, profil Anda akan direview oleh admin sebelum dapat menerima proyek.
-                        </p>
-                    </div>
                 </div>
 
                 {{-- Nama Lengkap --}}
@@ -333,8 +312,8 @@ new #[Layout('layouts.guest-public')] class extends Component {
                         'bg-navy hover:bg-navy-700 active:bg-navy-800'"
                     id="register-submit-btn">
                     <span wire:loading.remove wire:target="register">
-                        <span x-show="role === 'customer'">Daftar Sebagai Pelanggan — Gratis</span>
-                        <span x-show="role === 'contractor'">Daftar Sebagai Mandor — Gratis</span>
+                        <span x-show="role === 'customer'">Daftar Sebagai Verifikator — Gratis</span>
+                        <span x-show="role === 'contractor'">Daftar Sebagai Ketua Pelaksana — Gratis</span>
                     </span>
                     <span wire:loading wire:target="register" class="flex items-center justify-center gap-2">
                         <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24" aria-hidden="true">
@@ -362,6 +341,6 @@ new #[Layout('layouts.guest-public')] class extends Component {
 
     {{-- Footer --}}
     <div class="relative pb-6 pt-2 text-center text-xs text-slate-400">
-        &copy; {{ date('Y') }} Mandorin. Hak cipta dilindungi.
+        &copy; {{ date('Y') }} SIPORA. Hak cipta dilindungi.
     </div>
 </div>

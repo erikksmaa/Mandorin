@@ -11,8 +11,7 @@ class RoleMiddleware
     /**
      * Handle an incoming request.
      * Menerima satu atau lebih role yang diizinkan.
-     * PENTING: role di-cast ke UserRole enum, jadi harus pakai ->value
-     * supaya perbandingan string berjalan benar.
+     * Role diperiksa berdasarkan slug dari relasi $user->role.
      */
     public function handle(
         Request $request,
@@ -24,9 +23,22 @@ class RoleMiddleware
             abort(403);
         }
 
-        $userRole = auth()->user()->role->value ?? auth()->user()->role;
+        $user = auth()->user();
+        $userRoleSlug = $user->role?->slug ?? '';
 
-        if (!in_array($userRole, $roles)) {
+        // Map aliases to standard slugs
+        $aliasMap = [
+            'admin' => 'administrator',
+            'verifier' => 'verifikator',
+        ];
+
+        $userRoleNormalized = $aliasMap[$userRoleSlug] ?? $userRoleSlug;
+
+        $normalizedAllowedRoles = array_map(function ($r) use ($aliasMap) {
+            return $aliasMap[$r] ?? $r;
+        }, $roles);
+
+        if (!in_array($userRoleNormalized, $normalizedAllowedRoles) && !in_array($userRoleSlug, $roles)) {
             abort(403, 'Akses tidak diizinkan.');
         }
 

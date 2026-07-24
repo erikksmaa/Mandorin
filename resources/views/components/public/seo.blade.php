@@ -1,6 +1,6 @@
 @props([
-    'title'       => 'Mandorin — Platform Digital Konstruksi Indonesia',
-    'description' => 'Temukan kontraktor & mandor terpercaya, kelola proyek, dan pantau progres harian secara transparan bersama Mandorin.',
+    'title'       => 'SIPORA — Platform Digital Tata Kelola Program Kepemudaan',
+    'description' => 'Platform Digital Tata Kelola Program Kepemudaan yang Transparan, Terintegrasi, dan Akuntabel (Dindikpora Kab. Pemalang).',
     'ogImage'     => null,
     'canonical'   => null,
 ])
@@ -16,7 +16,7 @@
 @if($ogImage)
 <meta property="og:image" content="{{ $ogImage }}">
 @endif
-<meta property="og:site_name" content="Mandorin">
+<meta property="og:site_name" content="SIPORA">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">

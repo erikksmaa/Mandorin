@@ -8,8 +8,8 @@
     {{-- SEO --}}
     @isset($seo){{ $seo }}@endisset
     @empty($seo)
-        <title>{{ $title ?? 'Mandorin — Platform Digital Konstruksi Indonesia' }}</title>
-        <meta name="description" content="{{ $description ?? 'Temukan kontraktor & mandor terpercaya di Mandorin.' }}">
+        <title>{{ $title ?? 'SIPORA — Sistem Informasi Program Olahraga dan Kepemudaan' }}</title>
+        <meta name="description" content="{{ $description ?? 'Sistem Informasi Program Olahraga dan Kepemudaan Dinas Dindikpora.' }}">
     @endempty
 
     <!-- Fonts -->
@@ -31,12 +31,19 @@
 
     <script>
         document.addEventListener('livewire:init', () => {
-            Livewire.on('swal-success', ({ title, text }) => {
-                Swal.fire({ icon: 'success', title, text, timer: 2500, showConfirmButton: false, toast: true, position: 'top-end' });
-            });
-            Livewire.on('swal-error', ({ title, text }) => {
-                Swal.fire({ icon: 'error', title, text });
-            });
+            const handleSuccess = (data) => {
+                const msg = typeof data === 'string' ? data : (data?.message ?? data?.text ?? 'Berhasil!');
+                Swal.fire({ icon: 'success', title: 'Berhasil!', text: msg, timer: 2500, showConfirmButton: false, toast: true, position: 'top-end' });
+            };
+            const handleError = (data) => {
+                const msg = typeof data === 'string' ? data : (data?.message ?? data?.text ?? 'Gagal!');
+                Swal.fire({ icon: 'error', title: 'Gagal!', text: msg });
+            };
+
+            Livewire.on('swal-success', handleSuccess);
+            Livewire.on('swal:success', handleSuccess);
+            Livewire.on('swal-error', handleError);
+            Livewire.on('swal:error', handleError);
         });
     </script>
 </body>

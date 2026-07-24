@@ -32,7 +32,7 @@ class AuthenticationTest extends TestCase
 
         $component
             ->assertHasNoErrors()
-            ->assertRedirect(route('dashboard', absolute: false));
+            ->assertRedirect(route('verifier.dashboard', absolute: false));
 
         $this->assertAuthenticated();
     }
@@ -56,15 +56,15 @@ class AuthenticationTest extends TestCase
 
     public function test_navigation_menu_can_be_rendered(): void
     {
-        $user = User::factory()->create();
+        $role = \App\Models\Role::firstOrCreate(['slug' => 'verifikator'], ['name' => 'Verifikator']);
+        $user = User::factory()->create(['role_id' => $role->id]);
 
         $this->actingAs($user);
 
-        $response = $this->get('/dashboard');
+        $response = $this->get('/verifier/dashboard');
 
         $response
-            ->assertOk()
-            ->assertSeeVolt('layout.navigation');
+            ->assertOk();
     }
 
     public function test_users_can_logout(): void

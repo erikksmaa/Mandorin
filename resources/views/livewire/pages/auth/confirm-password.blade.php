@@ -29,7 +29,14 @@ new #[Layout('layouts.guest')] class extends Component
 
         session(['auth.password_confirmed_at' => time()]);
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        $roleSlug = Auth::user()->role?->slug;
+        $targetRoute = match ($roleSlug) {
+            'leader' => route('leader.dashboard', absolute: false),
+            'administrator' => route('admin.dashboard', absolute: false),
+            default => route('verifier.dashboard', absolute: false),
+        };
+
+        $this->redirectIntended(default: $targetRoute, navigate: true);
     }
 }; ?>
 

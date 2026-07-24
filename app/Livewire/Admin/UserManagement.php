@@ -2,64 +2,60 @@
 
 namespace App\Livewire\Admin;
 
+use App\Models\Role;
+use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
-use App\Models\User;
 
-#[Layout('layouts.app')]
-#[Title('Manajemen Pengguna')]
 class UserManagement extends Component
 {
     use WithPagination;
 
     public $search = '';
     public $filterRole = '';
+    public $perPage = 10;
 
-    public function updatedSearch()
+    public function updated($propertyName)
     {
-        $this->resetPage();
+        if (in_array($propertyName, ['search', 'filterRole', 'perPage'])) {
+            $this->resetPage();
+        }
     }
 
-    public function updatedFilterRole()
+    public function deleteUser($userId)
     {
-        $this->resetPage();
-    }
+        $user = User::findOrFail($userId);
 
-    public function deleteUser($id)
-    {
-        $user = User::findOrFail($id);
-        
-        // Prevent deleting admin
-        if ($user->role?->value === 'admin') {
-            $this->dispatch('swal-error', title: 'Tidak Diizinkan!', text: 'Akun admin tidak dapat dihapus.');
+        if ($user->id === auth()->id()) {
+            $this->dispatch('swal:error', message: 'Anda tidak dapat menghapus akun Anda sendiri!');
             return;
         }
 
         $user->delete();
-        $this->dispatch('swal-success', title: 'Pengguna Dihapus!', text: 'Data pengguna berhasil dihapus.');
+        $this->dispatch('swal:success', message: 'Pengguna berhasil dihapus!');
     }
 
     public function render()
     {
-        $query = User::query();
+        $roles = Role::all();
 
-        if ($this->search) {
-            $query->where(function ($q) {
-                $q->where('name', 'like', '%' . $this->search . '%')
-                  ->orWhere('email', 'like', '%' . $this->search . '%');
-            });
-        }
+        $users = User::with('role')
+            ->when($this->search, function ($q) {
+                $q->where(function ($sub) {
+                    $sub->where('name', 'like', "%{$this->search}%")
+                        ->orWhere('email', 'like', "%{$this->search}%")
+                        ->orWhere('phone', 'like', "%{$this->search}%");
+                });
+            })
+            ->when($this->filterRole !== '', function ($q) {
+                $q->whereHas('role', function ($r) {
+                    $r->where('slug', $this->filterRole);
+                });
+            })
+            ->latest()
+            ->paginate((int) $this->perPage);
 
-        if ($this->filterRole) {
-            $query->where('role', $this->filterRole);
-        }
-
-        $users = $query->latest()->paginate(15);
-
-        return view('livewire.admin.user-management', [
-            'users' => $users
-        ]);
+        return view('livewire.admin.user-management', compact('users', 'roles'))
+            ->layout('layouts.app');
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Enums\UserRole;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -11,100 +11,50 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
+        $roleMap = Role::pluck('id', 'slug');
+
         $users = [
-
-            // ==========================
-            // ADMIN
-            // ==========================
-
             [
-                'name' => 'Administrator',
-                'email' => 'admin@mandorin.test',
+                'name' => 'Administrator SIPORA',
+                'email' => 'admin@sipora.id',
+                'role_slug' => 'administrator',
                 'phone' => '081111111111',
-                'password' => Hash::make('password'),
-                'role' => UserRole::Admin,
+                'gender' => 'L',
             ],
-
-            // ==========================
-            // CONTRACTOR
-            // ==========================
-
             [
-                'name' => 'Budi Santoso',
-                'email' => 'budi@mandorin.test',
-                'phone' => '081111111112',
-                'password' => Hash::make('password'),
-                'role' => UserRole::Contractor,
+                'name' => 'Verifikator Dindikpora',
+                'email' => 'verifikator@sipora.id',
+                'role_slug' => 'verifikator',
+                'phone' => '082222222222',
+                'gender' => 'P',
             ],
-
             [
-                'name' => 'Andi Wijaya',
-                'email' => 'andi@mandorin.test',
-                'phone' => '081111111113',
-                'password' => Hash::make('password'),
-                'role' => UserRole::Contractor,
+                'name' => 'Ketua Pelaksana Program',
+                'email' => 'leader@sipora.id',
+                'role_slug' => 'leader',
+                'phone' => '083333333333',
+                'gender' => 'L',
             ],
-
             [
-                'name' => 'Rudi Hartono',
-                'email' => 'rudi@mandorin.test',
-                'phone' => '081111111114',
-                'password' => Hash::make('password'),
-                'role' => UserRole::Contractor,
+                'name' => 'Anggota Program',
+                'email' => 'member@sipora.id',
+                'role_slug' => 'member',
+                'phone' => '084444444444',
+                'gender' => 'P',
             ],
-
-            // ==========================
-            // CUSTOMER
-            // ==========================
-
-            [
-                'name' => 'Ahmad Fauzi',
-                'email' => 'ahmad@mandorin.test',
-                'phone' => '081111111115',
-                'password' => Hash::make('password'),
-                'role' => UserRole::Customer,
-            ],
-
-            [
-                'name' => 'Siti Nurhaliza',
-                'email' => 'siti@mandorin.test',
-                'phone' => '081111111116',
-                'password' => Hash::make('password'),
-                'role' => UserRole::Customer,
-            ],
-
-            [
-                'name' => 'Dimas Pratama',
-                'email' => 'dimas@mandorin.test',
-                'phone' => '081111111117',
-                'password' => Hash::make('password'),
-                'role' => UserRole::Customer,
-            ],
-
-            [
-                'name' => 'Nabila Putri',
-                'email' => 'nabila@mandorin.test',
-                'phone' => '081111111118',
-                'password' => Hash::make('password'),
-                'role' => UserRole::Customer,
-            ],
-
-            [
-                'name' => 'Rizky Saputra',
-                'email' => 'rizky@mandorin.test',
-                'phone' => '081111111119',
-                'password' => Hash::make('password'),
-                'role' => UserRole::Customer,
-            ],
-
         ];
 
         foreach ($users as $user) {
             User::updateOrCreate(
+                ['email' => $user['email']],
                 [
-                    'email' => $user['email'],
-                ],
-                $user
+                    'role_id' => $roleMap[$user['role_slug']] ?? $roleMap['member'],
+                    'name' => $user['name'],
+                    'phone' => $user['phone'],
+                    'password' => Hash::make('password'),
+                    'gender' => $user['gender'],
+                    'is_active' => true,
+                ]
             );
         }
     }

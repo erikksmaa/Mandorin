@@ -63,7 +63,13 @@ new class extends Component
         $user = Auth::user();
 
         if ($user->hasVerifiedEmail()) {
-            $this->redirectIntended(default: route('dashboard', absolute: false));
+            $roleSlug = $user->role?->slug ?? '';
+            $targetRoute = match ($roleSlug) {
+                'administrator', 'admin'  => route('admin.dashboard', absolute: false),
+                'leader', 'contractor'    => route('leader.dashboard', absolute: false),
+                default                   => route('verifier.dashboard', absolute: false),
+            };
+            $this->redirectIntended(default: $targetRoute);
             return;
         }
 

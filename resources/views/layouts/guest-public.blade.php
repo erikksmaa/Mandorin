@@ -5,12 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ isset($title) ? $title . ' — Mandorin' : 'Mandorin — Platform Digital Konstruksi Indonesia' }}</title>
-    <meta name="description" content="{{ $description ?? 'Temukan kontraktor & mandor terpercaya, kelola proyek, dan pantau progres harian secara transparan bersama Mandorin.' }}">
+    @isset($seo){{ $seo }}@endisset
+    @empty($seo)
+        <title>{{ $title ?? 'SIPORA — Sistem Informasi Program Olahraga dan Kepemudaan' }}</title>
+        <meta name="description" content="{{ $description ?? 'Sistem Informasi Program Olahraga dan Kepemudaan Dinas Dindikpora.' }}">
+    @endempty
 
     <!-- Open Graph -->
-    <meta property="og:title" content="Mandorin — Platform Digital Konstruksi Indonesia">
-    <meta property="og:description" content="Temukan kontraktor terpercaya untuk proyek Anda. Terverifikasi, transparan, dan mudah.">
+    <meta property="og:title" content="SIPORA — Platform Digital Konstruksi Indonesia">
+    <meta property="og:description" content="Temukan kontraktor terpercaya untuk program Anda. Terverifikasi, transparan, dan mudah.">
     <meta property="og:type" content="website">
 
     <!-- Fonts: Inter + Big Shoulders Display -->

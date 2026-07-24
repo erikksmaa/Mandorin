@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ isset($title) ? $title . ' — Mandorin' : config('app.name', 'Mandorin') }}</title>
+    <title>{{ isset($title) ? $title . ' — SIPORA' : config('app.name', 'SIPORA') }}</title>
     <meta name="description"
-        content="Mandorin — Platform digital penghubung kontraktor &amp; customer properti Indonesia.">
+        content="SIPORA — Sistem Informasi Program Olahraga dan Kepemudaan.">
 
     <!-- Fonts: Inter (data/body) + Big Shoulders Display (heading) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -62,27 +62,45 @@
 
         // Listen for Livewire-dispatched SweetAlert events
         document.addEventListener('livewire:init', () => {
-            Livewire.on('swal-success', (data) => {
+            const handleSuccess = (data) => {
+                const msg = typeof data === 'string' ? data : (data?.message ?? data[0]?.text ?? data[0]?.message ?? 'Berhasil!');
                 Swal.fire({
                     icon: 'success',
-                    title: data[0]?.title ?? 'Berhasil!',
-                    text: data[0]?.text ?? '',
+                    title: 'Berhasil!',
+                    text: msg,
                     timer: 2500,
                     showConfirmButton: false,
                     toast: true,
                     position: 'top-end',
                     ...swalConfig,
                 });
-            });
+            };
 
-            Livewire.on('swal-error', (data) => {
+            const handleError = (data) => {
+                const msg = typeof data === 'string' ? data : (data?.message ?? data[0]?.text ?? data[0]?.message ?? 'Terjadi kesalahan');
                 Swal.fire({
                     icon: 'error',
-                    title: data[0]?.title ?? 'Gagal!',
-                    text: data[0]?.text ?? '',
+                    title: 'Gagal!',
+                    text: msg,
                     ...swalConfig,
                 });
-            });
+            };
+
+            const handleWarning = (data) => {
+                const msg = typeof data === 'string' ? data : (data?.message ?? data[0]?.text ?? data[0]?.message ?? 'Peringatan');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian',
+                    text: msg,
+                    ...swalConfig,
+                });
+            };
+
+            Livewire.on('swal-success', handleSuccess);
+            Livewire.on('swal:success', handleSuccess);
+            Livewire.on('swal-error', handleError);
+            Livewire.on('swal:error', handleError);
+            Livewire.on('swal:warning', handleWarning);
 
             Livewire.on('swal-confirm', (data) => {
                 Swal.fire({

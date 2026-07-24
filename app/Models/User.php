@@ -2,24 +2,29 @@
 
 namespace App\Models;
 
-use App\Enums\UserRole;
+// use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use  HasFactory, Notifiable;
 
     protected $fillable = [
+        'role_id',
         'name',
         'email',
         'phone',
         'password',
-        'role',
+        'avatar',
+        'gender',
+        'birth_date',
+        'address',
+        'is_active',
+        'last_login_at',
     ];
 
     protected $hidden = [
@@ -31,38 +36,66 @@ class User extends Authenticatable
     {
         return [
             'password' => 'hashed',
-            'role' => UserRole::class,
+            'birth_date' => 'date',
+            'last_login_at' => 'datetime',
+            'is_active' => 'boolean',
         ];
     }
 
-    public function contractorProfile(): HasOne
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+
+    public function role(): BelongsTo
     {
-        return $this->hasOne(ContractorProfile::class);
+        return $this->belongsTo(Role::class);
     }
 
-    public function customerProjects(): HasMany
+    public function organizations(): HasMany
     {
-        return $this->hasMany(Project::class, 'customer_id');
+        return $this->hasMany(Organization::class, 'created_by');
     }
 
-    public function contractorProjects(): HasMany
+    public function ledPrograms(): HasMany
     {
-        return $this->hasMany(Project::class, 'contractor_id');
+        return $this->hasMany(Program::class, 'leader_id');
     }
 
-    public function dailyReports(): HasMany
+    public function createdPrograms(): HasMany
     {
-        return $this->hasMany(DailyReport::class, 'created_by');
+        return $this->hasMany(Program::class, 'created_by');
     }
 
-    public function projectStatusHistories(): HasMany
+    public function verifiedPrograms(): HasMany
     {
-        return $this->hasMany(ProjectStatusHistory::class, 'changed_by');
+        return $this->hasMany(Program::class, 'verified_by');
     }
 
-    public function reviews(): HasMany
+    public function organizationMemberships(): HasMany
     {
-        return $this->hasMany(Review::class, 'customer_id');
+        return $this->hasMany(OrganizationMember::class);
+    }
+
+    public function programMemberships(): HasMany
+    {
+        return $this->hasMany(ProgramMember::class);
+    }
+
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
+    public function activityLogs(): HasMany
+    {
+        return $this->hasMany(ActivityLog::class, 'created_by');
+    }
+
+    public function verifiedFinancialReports(): HasMany
+    {
+        return $this->hasMany(FinancialReport::class, 'verified_by');
     }
 
     public function notifications(): HasMany

@@ -14,7 +14,13 @@ new #[Layout('layouts.guest')] class extends Component
     public function sendVerification(): void
     {
         if (Auth::user()->hasVerifiedEmail()) {
-            $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+            $roleSlug = Auth::user()->role?->slug ?? '';
+            $targetRoute = match ($roleSlug) {
+                'administrator', 'admin'  => route('admin.dashboard', absolute: false),
+                'leader', 'contractor'    => route('leader.dashboard', absolute: false),
+                default                   => route('verifier.dashboard', absolute: false),
+            };
+            $this->redirectIntended(default: $targetRoute, navigate: true);
 
             return;
         }

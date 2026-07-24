@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Enums\NotificationType;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Notification extends Model
@@ -13,10 +13,12 @@ class Notification extends Model
 
     protected $fillable = [
         'user_id',
-        'type',
         'title',
         'message',
+        'type',
+        'reference_id',
         'is_read',
+        'read_at',
     ];
 
     protected function casts(): array
@@ -24,6 +26,7 @@ class Notification extends Model
         return [
             'type' => NotificationType::class,
             'is_read' => 'boolean',
+            'read_at' => 'datetime',
         ];
     }
 

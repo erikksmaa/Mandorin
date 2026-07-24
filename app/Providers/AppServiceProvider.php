@@ -2,10 +2,13 @@
 
 namespace App\Providers;
 
-use App\Models\Project;
-use App\Observers\ProjectObserver;
+use App\Models\FinancialReport;
+use App\Models\Organization;
+use App\Models\Program;
+use App\Observers\FinancialReportObserver;
+use App\Observers\OrganizationObserver;
+use App\Observers\ProgramObserver;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Fortify\Fortify;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,7 +25,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Register ProjectObserver untuk auto-generate project_code
-        Project::observe(ProjectObserver::class);
+        // Register SIPORA Observers
+        Organization::observe(OrganizationObserver::class);
+        Program::observe(ProgramObserver::class);
+        FinancialReport::observe(FinancialReportObserver::class);
     }
 }

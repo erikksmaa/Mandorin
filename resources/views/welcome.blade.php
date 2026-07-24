@@ -1,23 +1,22 @@
 @php
     /**
-     * Query Kontraktor Pilihan (Data Real)
+     * Query Organisasi Pilihan (Data Real)
      */
-    $featuredContractors = \App\Models\ContractorProfile::with(['user', 'services'])
-        ->where('verification_status', 'verified')
-        ->orderByDesc('rating')
+    $featuredOrganizations = \App\Models\Organization::with(['category', 'creator'])
+        ->where('status', \App\Enums\OrganizationStatus::Active)
+        ->latest()
         ->take(4)
         ->get();
 
     /**
-     * Master Layanan
+     * Master Kategori Program
      */
-    $allServices = \App\Models\Service::orderBy('name')->get();
+    $allServices = \App\Models\ProgramCategory::orderBy('name')->get();
 
     /**
-     * Query Portfolio Pilihan (Terbaru)
+     * Query Program Pilihan (Terbaru)
      */
-    $featuredPortfolios = \App\Models\Portfolio::with(['contractorProfile.user', 'contractorProfile.services'])
-        ->whereHas('contractorProfile', fn($q) => $q->where('verification_status', 'verified'))
+    $featuredPrograms = \App\Models\Program::with(['organization', 'category'])
         ->latest()
         ->take(4)
         ->get();
@@ -53,23 +52,23 @@
                     <div
                         class="inline-flex items-center gap-2 bg-orange-500/15 border border-orange-500/25 text-orange-300 text-xs font-semibold px-3 py-1.5 rounded-full mb-6">
                         <span class="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" aria-hidden="true"></span>
-                        Platform Konstruksi Digital #1 Indonesia
+                        Platform Program Kepemudaan & Olahraga
                     </div>
 
                     <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black text-white mb-6 leading-[1.05] tracking-tight"
                         style="font-family: 'Big Shoulders Display', sans-serif;">
                         Temukan<br>
-                        <span class="text-orange-400">Kontraktor</span><br>
-                        Terpercaya
+                        <span class="text-orange-400">Organisasi</span><br>
+                        Pemuda Terbaik
                     </h1>
 
                     <p class="text-white/70 text-lg leading-relaxed mb-10 max-w-md">
-                        Mandorin menghubungkan pemilik properti dengan mandor berpengalaman & terverifikasi.
-                        Pantau progres harian, kelola pembayaran — semua dalam satu platform.
+                        SIPORA menghubungkan Dindikpora dengan organisasi kepemudaan terverifikasi.
+                        Pantau progres kegiatan, kelola e-lpj — semua dalam satu platform.
                     </p>
 
                     {{-- Search Bar (fungsional via form GET) --}}
-                    <form action="{{ route('public.contractors.index') }}" method="GET"
+                    <form action="{{ route('public.organizations.index') }}" method="GET"
                         class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-2 flex flex-col sm:flex-row gap-2 max-w-xl"
                         role="search">
                         {{-- Select Layanan (ID) --}}
@@ -81,7 +80,7 @@
                             </svg>
                             <select name="layanan" id="hero-search-service"
                                 class="flex-1 text-sm text-slate-800 bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:border-0 p-0 cursor-pointer">
-                                <option value="">Semua Layanan</option>
+                                <option value="">Semua Kategori</option>
                                 @foreach ($allServices as $svc)
                                     <option value="{{ $svc->id }}">{{ $svc->name }}</option>
                                 @endforeach
@@ -103,7 +102,7 @@
                         {{-- Search Button --}}
                         <button type="submit"
                             class="flex items-center justify-center gap-2 px-5 py-3 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-xl transition shadow-lg shadow-orange-500/30 whitespace-nowrap"
-                            aria-label="Cari kontraktor">
+                            aria-label="Cari organisasi">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                                 aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -117,7 +116,7 @@
                     <div class="flex flex-wrap gap-2 mt-4">
                         <span class="text-white/50 text-xs mt-1 self-center">Populer:</span>
                         @foreach ($allServices->take(4) as $svc)
-                            <a href="{{ route('public.contractors.index') }}?layanan={{ $svc->id }}" wire:navigate
+                            <a href="{{ route('public.organizations.index') }}?layanan={{ $svc->id }}" wire:navigate
                                 class="px-3 py-1 bg-white/10 hover:bg-white/20 text-white/80 hover:text-white text-xs rounded-full border border-white/15 transition">
                                 {{ $svc->name }}
                             </a>
@@ -127,7 +126,7 @@
 
                 {{-- Right: Stats Cards --}}
                 <div class="hidden lg:grid grid-cols-2 gap-4">
-                    @foreach ([['value' => '500+', 'label' => 'Kontraktor Terdaftar', 'icon' => 'users', 'color' => 'from-orange-500/20 to-orange-500/5'], ['value' => '1.2k+', 'label' => 'Proyek Selesai', 'icon' => 'check', 'color' => 'from-verified-500/20 to-verified-500/5'], ['value' => '98%', 'label' => 'Kepuasan Pelanggan', 'icon' => 'star', 'color' => 'from-amber-500/20 to-amber-500/5'], ['value' => '34', 'label' => 'Kab/Kota Terlayani', 'icon' => 'map', 'color' => 'from-navy-400/30 to-navy-400/5']] as $stat)
+                    @foreach ([['value' => '500+', 'label' => 'Organisasi Terdaftar', 'icon' => 'users', 'color' => 'from-orange-500/20 to-orange-500/5'], ['value' => '1.2k+', 'label' => 'Program Selesai', 'icon' => 'check', 'color' => 'from-verified-500/20 to-verified-500/5'], ['value' => '98%', 'label' => 'Program Sukses', 'icon' => 'star', 'color' => 'from-amber-500/20 to-amber-500/5'], ['value' => '34', 'label' => 'Kecamatan Terjangkau', 'icon' => 'map', 'color' => 'from-navy-400/30 to-navy-400/5']] as $stat)
                         <div
                             class="bg-gradient-to-br {{ $stat['color'] }} border border-white/10 rounded-2xl p-5 backdrop-blur-sm">
                             <div class="text-3xl font-black text-white mb-1"
@@ -153,24 +152,24 @@
     </section>
 
     {{-- ============================================================
-     SECTION 2: KATEGORI LAYANAN POPULER
+     SECTION 2: KATEGORI PROGRAM POPULER
      ============================================================ --}}
     <section class="bg-slate-50 py-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
                 <h2 class="text-4xl lg:text-5xl font-black text-slate-900 mb-3"
                     style="font-family: 'Big Shoulders Display', sans-serif;">
-                    Layanan Populer
+                    Kategori Program
                 </h2>
                 <p class="text-slate-500 text-base max-w-lg mx-auto">
-                    Dari renovasi hingga instalasi — temukan keahlian yang Anda butuhkan.
+                    Dari turnamen olahraga hingga pelatihan kepemudaan — temukan bidang program yang Anda butuhkan.
                 </p>
             </div>
 
             {{-- Grid Kategori --}}
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
                 @foreach ($allServices as $svc)
-                    <a href="{{ route('public.contractors.index') }}?layanan={{ $svc->id }}" wire:navigate
+                    <a href="{{ route('public.organizations.index') }}?layanan={{ $svc->id }}" wire:navigate
                         class="group bg-white border border-slate-200 shadow-sm rounded-2xl p-5 flex flex-col items-center gap-3 hover:-translate-y-1 hover:shadow-md transition-all duration-200 cursor-pointer">
                         <div
                             class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center group-hover:bg-orange-200 transition-colors">
@@ -188,8 +187,7 @@
     </section>
 
     {{-- ============================================================
-     SECTION 3: KONTRAKTOR PILIHAN / TERVERIFIKASI
-     Data disambungkan ke ContractorProfile real (query di atas)
+     SECTION 3: ORGANISASI PILIHAN / TERVERIFIKASI
      ============================================================ --}}
     <section class="bg-white py-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -197,13 +195,13 @@
                 <div>
                     <h2 class="text-4xl lg:text-5xl font-black text-slate-900 mb-2"
                         style="font-family: 'Big Shoulders Display', sans-serif;">
-                        Kontraktor Pilihan
+                        Organisasi Pilihan
                     </h2>
                     <p class="text-slate-500 text-base">
-                        Terverifikasi identitasnya, terbukti prestasinya.
+                        Terverifikasi legalitasnya, terbukti integritasnya.
                     </p>
                 </div>
-                <a href="{{ route('public.contractors.index') }}" wire:navigate
+                <a href="{{ route('public.organizations.index') }}" wire:navigate
                     class="flex items-center gap-1.5 text-sm font-semibold text-orange-500 hover:text-orange-600 transition shrink-0">
                     Lihat Semua
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
@@ -213,107 +211,19 @@
                 </a>
             </div>
 
-            @if ($featuredContractors->isEmpty())
+            @if ($featuredOrganizations->isEmpty())
                 <div class="text-center py-12 text-slate-400">
                     <svg class="w-12 h-12 mx-auto mb-3 text-slate-300" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    <p>Belum ada kontraktor terverifikasi.</p>
+                    <p>Belum ada organisasi terdaftar.</p>
                 </div>
             @else
                 <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    @foreach ($featuredContractors as $cp)
-                        <div
-                            class="bg-white border border-slate-200 shadow-sm rounded-2xl p-5 flex flex-col hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
-                            {{-- Avatar --}}
-                            <div class="flex items-start justify-between mb-4">
-                                <div
-                                    class="w-14 h-14 rounded-2xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
-                                    @if ($cp->profile_photo)
-                                        <img src="{{ asset('storage/' . $cp->profile_photo) }}"
-                                            alt="Foto profil {{ $cp->user->name }}"
-                                            class="w-full h-full object-cover">
-                                    @else
-                                        <div class="w-full h-full flex items-center justify-center bg-navy text-white font-bold text-xl"
-                                            aria-label="Inisial {{ $cp->user->name }}">
-                                            {{ strtoupper(substr($cp->user->name ?? '?', 0, 1)) }}
-                                        </div>
-                                    @endif
-                                </div>
-                                {{-- Badge Terverifikasi --}}
-                                <span
-                                    class="px-2.5 py-1 rounded-full text-xs font-semibold bg-verified-100 text-verified-700 flex items-center gap-1">
-                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                                        <path fill-rule="evenodd"
-                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                    Terverifikasi
-                                </span>
-                            </div>
-
-                            {{-- Info --}}
-                            <h3 class="font-bold text-slate-800 mb-1 truncate">{{ $cp->user->name }}</h3>
-
-                            {{-- Rating --}}
-                            <div class="flex items-center gap-1.5 mb-3">
-                                <div class="flex text-amber-400">
-                                    @for ($i = 1; $i <= 5; $i++)
-                                        <svg class="w-3.5 h-3.5 {{ $i <= round($cp->rating ?? 0) ? 'text-amber-400' : 'text-slate-200' }}"
-                                            fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                                            <path
-                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                        </svg>
-                                    @endfor
-                                </div>
-                                <span
-                                    class="text-xs font-semibold text-slate-700">{{ number_format($cp->rating ?? 0, 1) }}</span>
-                                <span class="text-xs text-slate-400">({{ $cp->total_reviews ?? 0 }} ulasan)</span>
-                            </div>
-
-                            {{-- Lokasi --}}
-                            @if ($cp->address)
-                                <div class="flex items-start gap-1 text-xs text-slate-500 mb-3">
-                                    <svg class="w-3.5 h-3.5 shrink-0 mt-0.5 text-slate-400" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                    <span class="truncate">{{ $cp->address }}</span>
-                                </div>
-                            @endif
-
-                            {{-- Badge Layanan --}}
-                            @if ($cp->services->isNotEmpty())
-                                <div class="flex flex-wrap gap-1 mb-4">
-                                    @foreach ($cp->services->take(3) as $svc)
-                                        <span
-                                            class="px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-medium rounded-full">
-                                            {{ $svc->name }}
-                                        </span>
-                                    @endforeach
-                                    @if ($cp->services->count() > 3)
-                                        <span class="px-2 py-0.5 bg-slate-100 text-slate-400 text-[10px] rounded-full">
-                                            +{{ $cp->services->count() - 3 }} lainnya
-                                        </span>
-                                    @endif
-                                </div>
-                            @else
-                                <div class="mb-4"></div>
-                            @endif
-
-                            {{-- CTA --}}
-                            <div class="mt-auto">
-                                <a href="{{ route('public.contractors.show', $cp) }}" wire:navigate
-                                    class="block w-full text-center py-2 px-4 bg-navy hover:bg-navy-700 text-white text-sm font-semibold rounded-xl transition">
-                                    Lihat Profil
-                                </a>
-                            </div>
-                        </div>
+                    @foreach ($featuredOrganizations as $org)
+                        <x-public.contractor-card :organization="$org" />
                     @endforeach
                 </div>
             @endif
@@ -321,7 +231,7 @@
     </section>
 
     {{-- ============================================================
-     SECTION 3.5: PORTFOLIO TERBARU
+     SECTION 3.5: PROGRAM TERBARU
      ============================================================ --}}
     <section class="bg-slate-50 py-20 border-t border-slate-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -329,15 +239,15 @@
                 <div>
                     <h2 class="text-4xl lg:text-5xl font-black text-slate-900 mb-2"
                         style="font-family: 'Big Shoulders Display', sans-serif;">
-                        Hasil Kerja Nyata
+                        Program Sukses
                     </h2>
                     <p class="text-slate-500 text-base">
-                        Inspirasi dari proyek-proyek terbaru yang telah diselesaikan.
+                        Inspirasi dari program-program terbaru yang telah diselesaikan.
                     </p>
                 </div>
-                <a href="{{ route('public.portfolios.index') }}" wire:navigate
+                <a href="{{ route('public.programs.index') }}" wire:navigate
                     class="flex items-center gap-1.5 text-sm font-semibold text-orange-500 hover:text-orange-600 transition shrink-0">
-                    Lihat Semua Portfolio
+                    Lihat Semua Program
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                         aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -345,19 +255,19 @@
                 </a>
             </div>
 
-            @if ($featuredPortfolios->isEmpty())
+            @if ($featuredPrograms->isEmpty())
                 <div class="text-center py-12 text-slate-400 bg-white border border-slate-200 rounded-2xl shadow-sm">
                     <svg class="w-12 h-12 mx-auto mb-3 text-slate-300" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <p>Belum ada portfolio yang dibagikan.</p>
+                    <p>Belum ada program yang diselesaikan.</p>
                 </div>
             @else
                 <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    @foreach ($featuredPortfolios as $portfolio)
-                        <x-public.portfolio-card :portfolio="$portfolio" />
+                    @foreach ($featuredPrograms as $program)
+                        <x-public.portfolio-card :program="$program" />
                     @endforeach
                 </div>
             @endif
@@ -372,10 +282,10 @@
             <div class="text-center mb-14">
                 <h2 class="text-4xl lg:text-5xl font-black text-slate-900 mb-3"
                     style="font-family: 'Big Shoulders Display', sans-serif;">
-                    Cara Kerja Mandorin
+                    Alur Program SIPORA
                 </h2>
                 <p class="text-slate-500 text-base max-w-lg mx-auto">
-                    Tiga langkah mudah untuk memulai proyek konstruksi impian Anda.
+                    Tiga langkah transparansi pelaksanaan program dari awal hingga pelaporan akhir.
                 </p>
             </div>
 
@@ -387,7 +297,7 @@
                     <div class="absolute inset-0 bg-gradient-to-r from-orange-200 via-orange-400 to-orange-200"></div>
                 </div>
 
-                @foreach ([['num' => '01', 'title' => 'Cari & Bandingkan', 'desc' => 'Temukan kontraktor sesuai kebutuhan & lokasi. Lihat portofolio, rating, dan layanan yang ditawarkan.', 'bg' => 'bg-orange-500', 'icon' => 'search'], ['num' => '02', 'title' => 'Ajukan Proyek', 'desc' => 'Kirim detail kebutuhan Anda. Kontraktor akan merespons dan menyetujui pesanan sebelum memulai.', 'bg' => 'bg-navy', 'icon' => 'clipboard'], ['num' => '03', 'title' => 'Pantau Progres', 'desc' => 'Terima laporan harian dengan foto. Konfirmasi pembayaran dan pantau kemajuan secara transparan.', 'bg' => 'bg-verified-600', 'icon' => 'chart']] as $step)
+                @foreach ([['num' => '01', 'title' => 'Cari & Verifikasi', 'desc' => 'Dindikpora menemukan organisasi yang sesuai kebutuhan. Lihat dokumentasi program, rekam jejak, dan legalitas organisasi.', 'bg' => 'bg-orange-500', 'icon' => 'search'], ['num' => '02', 'title' => 'Ajukan Program', 'desc' => 'Ketua Pelaksana mengajukan proposal kegiatan. Verifikator Dindikpora mereview dan menyetujui program sebelum dimulai.', 'bg' => 'bg-navy', 'icon' => 'clipboard'], ['num' => '03', 'title' => 'Pantau Logbook & E-LPJ', 'desc' => 'Ketua mengupload laporan foto harian dan E-LPJ. Dindikpora memantau seluruh proses secara transparan.', 'bg' => 'bg-verified-600', 'icon' => 'chart']] as $step)
                     <div class="flex flex-col items-center text-center">
                         {{-- Circle Number --}}
                         <div
@@ -436,18 +346,18 @@
                     Semua yang Anda Butuhkan
                 </h2>
                 <p class="text-slate-500 text-base max-w-xl mx-auto">
-                    Dari pencarian hingga pelaporan harian — Mandorin digitalisasi seluruh proses konstruksi Anda.
+                    Dari pengajuan proposal hingga pelaporan akhir kegiatan — SIPORA mendigitalisasi seluruh program kepemudaan.
                 </p>
             </div>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
                 @foreach ([
-        ['bg' => 'bg-orange-100', 'color' => 'text-orange-600', 'title' => 'Kontraktor Terverifikasi', 'desc' => 'Hanya kontraktor dengan dokumen identitas terverifikasi admin yang dapat menerima proyek.'],
-        ['bg' => 'bg-navy-100', 'color' => 'text-navy', 'title' => 'Laporan Foto Harian', 'desc' => 'Kontraktor kirim laporan progres + foto before/after setiap hari. Customer pantau real-time.'],
-        ['bg' => 'bg-green-100', 'color' => 'text-green-700', 'title' => 'Manajemen Tim Pekerja', 'desc' => 'Kontraktor kelola data pekerja & absensi harian per proyek dengan mudah.'],
-        ['bg' => 'bg-amber-100', 'color' => 'text-amber-700', 'title' => 'Log Pembayaran Termin', 'desc' => 'Catat setiap pembayaran bertahap dengan bukti. Customer konfirmasi langsung di platform.'],
-        ['bg' => 'bg-purple-100', 'color' => 'text-purple-700', 'title' => 'Portofolio Proyek', 'desc' => 'Kontraktor bangun reputasi lewat foto before/after proyek yang sudah diselesaikan.'],
-        ['bg' => 'bg-blue-100', 'color' => 'text-blue-700', 'title' => 'Chat via WhatsApp', 'desc' => 'Hubungi mandor langsung via WhatsApp dengan pesan berisi detail proyek yang otomatis terformat.'],
+        ['bg' => 'bg-orange-100', 'color' => 'text-orange-600', 'title' => 'Organisasi Terverifikasi', 'desc' => 'Hanya organisasi dengan legalitas & SKT terverifikasi yang dapat mengajukan program.'],
+        ['bg' => 'bg-navy-100', 'color' => 'text-navy', 'title' => 'Laporan Foto Harian', 'desc' => 'Organisasi mengisi logbook progres dan dokumentasi rutin. Verifikator memantau real-time.'],
+        ['bg' => 'bg-green-100', 'color' => 'text-green-700', 'title' => 'Manajemen Tim Anggota', 'desc' => 'Ketua mengelola data pengurus & presensi anggota per program dengan mudah.'],
+        ['bg' => 'bg-amber-100', 'color' => 'text-amber-700', 'title' => 'E-LPJ Keuangan Terpadu', 'desc' => 'Catat seluruh item pengeluaran bertahap dengan bukti struk. Dindikpora konfirmasi langsung via platform.'],
+        ['bg' => 'bg-purple-100', 'color' => 'text-purple-700', 'title' => 'Galeri Dokumentasi Program', 'desc' => 'Organisasi bangun kredibilitas dan transparansi publik lewat galeri kegiatan yang sudah diselesaikan.'],
+        ['bg' => 'bg-blue-100', 'color' => 'text-blue-700', 'title' => 'Transparansi Dindikpora', 'desc' => 'Memastikan seluruh laporan tersentralisasi di Dindikpora secara rapi dan paperless.'],
     ] as $feat)
                     <div
                         class="group bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
@@ -481,15 +391,15 @@
             <div class="text-center mb-12">
                 <h2 class="text-4xl lg:text-5xl font-black text-white mb-3"
                     style="font-family: 'Big Shoulders Display', sans-serif;">
-                    Siap Bergabung?
+                    Siap Mengembangkan Kepemudaan?
                 </h2>
                 <p class="text-white/60 text-base">
-                    Pilih peran Anda dan mulai pengalaman konstruksi digital bersama Mandorin.
+                    Pilih peran Anda dan jadilah bagian dari transformasi digital kepemudaan SIPORA.
                 </p>
             </div>
 
             <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                {{-- Card Customer --}}
+                {{-- Card Verifikator --}}
                 <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 flex flex-col">
                     <div class="w-14 h-14 bg-orange-500/20 rounded-2xl flex items-center justify-center mb-5">
                         <svg class="w-7 h-7 text-orange-400" fill="none" viewBox="0 0 24 24"
@@ -500,18 +410,18 @@
                     </div>
                     <h3 class="text-2xl font-black text-white mb-2"
                         style="font-family: 'Big Shoulders Display', sans-serif;">
-                        Butuh Jasa Konstruksi?
+                        Dinas & Verifikator
                     </h3>
                     <p class="text-white/60 text-sm leading-relaxed mb-6 flex-1">
-                        Temukan dan pesan kontraktor terpercaya. Pantau progres proyek Anda kapan saja, di mana saja.
+                        Temukan rekam jejak organisasi dan pantau progres program yang Anda danai secara real-time.
                     </p>
                     <a href="{{ route('register') }}" wire:navigate
                         class="block text-center py-3 px-6 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl transition shadow-lg shadow-orange-500/30">
-                        Cari Kontraktor Sekarang
+                        Cari Organisasi Sekarang
                     </a>
                 </div>
 
-                {{-- Card Kontraktor --}}
+                {{-- Card Organisasi --}}
                 <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 flex flex-col">
                     <div class="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-5">
                         <svg class="w-7 h-7 text-white/80" fill="none" viewBox="0 0 24 24" stroke="currentColor"
@@ -522,15 +432,14 @@
                     </div>
                     <h3 class="text-2xl font-black text-white mb-2"
                         style="font-family: 'Big Shoulders Display', sans-serif;">
-                        Punya Keahlian Konstruksi?
+                        Organisasi Pemuda
                     </h3>
                     <p class="text-white/60 text-sm leading-relaxed mb-6 flex-1">
-                        Daftarkan diri sebagai mandor/kontraktor. Dapatkan proyek, bangun reputasi, dan kelola tim
-                        dengan mudah.
+                        Daftarkan organisasi Anda, ajukan program inovatif, dan laporkan kegiatan Anda langsung dari SIPORA.
                     </p>
                     <a href="{{ route('register') }}" wire:navigate
                         class="block text-center py-3 px-6 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-bold rounded-xl transition">
-                        Daftar Jadi Mandor
+                        Daftar Sebagai Organisasi
                     </a>
                 </div>
             </div>

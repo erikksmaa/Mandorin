@@ -2,43 +2,40 @@
 
 namespace App\Livewire\Admin;
 
+use App\Models\FinancialReport;
+use App\Models\Organization;
+use App\Models\Program;
 use App\Models\User;
-use App\Models\Project;
-use App\Models\ContractorProfile;
-use App\Enums\VerificationStatus;
-use App\Enums\ProjectStatus;
 use Livewire\Component;
-use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
 
-#[Layout('layouts.app')]
-#[Title('Dashboard Admin')]
 class Dashboard extends Component
 {
     public function render()
     {
-        $stats = [
-            'totalUsers' => User::count(),
-            'totalContractors' => User::where('role', 'contractor')->count(),
-            'totalProjects' => Project::count(),
-            'pendingVerifications' => ContractorProfile::where('verification_status', 'pending')->count(),
-        ];
+        $totalUsers          = User::count();
+        $totalOrganizations  = Organization::count();
+        $pendingVerifications = Organization::where('status', 'inactive')->count();
+        $totalPrograms       = Program::count();
+        $totalFinancialReports = FinancialReport::count();
 
-        $recentProjects = Project::with(['customer', 'contractor'])
+        $recentOrganizations = Organization::with('category', 'creator')
             ->latest()
             ->take(5)
             ->get();
 
-        $pendingContractors = ContractorProfile::with('user')
-            ->where('verification_status', 'pending')
+        $recentPrograms = Program::with('organization', 'category', 'leader')
             ->latest()
             ->take(5)
             ->get();
 
-        return view('livewire.admin.dashboard', [
-            'stats' => $stats,
-            'recentProjects' => $recentProjects,
-            'pendingContractors' => $pendingContractors,
-        ]);
+        return view('livewire.admin.dashboard', compact(
+            'totalUsers',
+            'totalOrganizations',
+            'pendingVerifications',
+            'totalPrograms',
+            'totalFinancialReports',
+            'recentOrganizations',
+            'recentPrograms'
+        ))->layout('layouts.app');
     }
 }

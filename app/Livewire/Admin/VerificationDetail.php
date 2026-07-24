@@ -34,7 +34,7 @@ class VerificationDetail extends Component
             'is_read' => false,
         ]);
 
-        return redirect()->route('admin.verification.index')->with('swal_success', 'Kontraktor berhasil diverifikasi.');
+        return redirect()->route('admin.verification.index')->with('swal_success', 'Profil Organisasi diverifikasi');
     }
 
     public function reject()

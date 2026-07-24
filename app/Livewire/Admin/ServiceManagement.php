@@ -9,7 +9,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 
 #[Layout('layouts.app')]
-#[Title('Kelola Layanan — Mandorin')]
+#[Title('Kelola Kategori Program')]
 class ServiceManagement extends Component
 {
     use WithPagination;

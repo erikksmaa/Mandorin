@@ -25,7 +25,7 @@
                         <svg class="w-10 h-10 text-orange-500" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 8.25h3m-3 3.75h3M6.75 15h.008v.008H6.75V15z"/>
                         </svg>
-                        <span class="text-3xl font-bold text-navy" style="font-family: 'Big Shoulders Display', sans-serif;">Mandorin</span>
+                        <span class="text-3xl font-bold text-navy" style="font-family: 'Big Shoulders Display', sans-serif;">SIPORA</span>
                     </a>
                 </div>
 
@@ -33,7 +33,7 @@
             </div>
             
             <div class="relative z-10 mt-8 text-center text-sm text-slate-500">
-                &copy; {{ date('Y') }} Mandorin. Platform Digital Konstruksi.
+                &copy; {{ date('Y') }} SIPORA. Platform Digital Konstruksi.
             </div>
         </div>
     </body>

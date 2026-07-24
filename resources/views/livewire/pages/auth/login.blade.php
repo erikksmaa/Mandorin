@@ -13,22 +13,27 @@ new #[Layout('layouts.guest-public')] class extends Component {
     public function login(): void
     {
         $this->validate();
-        $this->form->authenticate();
+
+        try {
+            $this->form->authenticate();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->dispatch('swal:error', message: 'Email atau Password yang Anda masukkan salah!');
+            throw $e;
+        }
+
         Session::regenerate();
 
         session()->flash('swal_success', 'Selamat datang kembali!');
 
-        $role = Auth::user()->role;
-        $roleValue = $role instanceof UserRole ? $role->value : $role;
+        $roleSlug = Auth::user()->role?->slug ?? '';
 
-        $this->redirectIntended(
-            default: match ($roleValue) {
-                'contractor' => route('contractor.dashboard', absolute: false),
-                'admin' => route('admin.dashboard', absolute: false),
-                default => route('customer.dashboard', absolute: false),
-            },
-            navigate: true,
-        );
+        $targetRoute = match ($roleSlug) {
+            'administrator', 'admin'  => route('admin.dashboard', absolute: false),
+            'leader', 'contractor'    => route('leader.dashboard', absolute: false),
+            default                   => route('verifier.dashboard', absolute: false),
+        };
+
+        $this->redirect($targetRoute, navigate: true);
     }
 }; ?>
 
@@ -56,10 +61,10 @@ new #[Layout('layouts.guest-public')] class extends Component {
             <div class="text-center mb-5">
                 <div class="relative mb-8 mt-3 flex justify-center">
                     <a href="{{ route('home') }}" wire:navigate class="flex items-center gap-2 group">
-                        <img src="{{ asset('logo.png') }}" alt="Mandorin Logo" class="w-[150px] object-contain">
+                        <img src="{{ asset('logo.png') }}" alt="SIPORA Logo" class="w-[150px] object-contain">
                     </a>
                 </div>
-                <p class="text-slate-500 text-sm mt-1">Masuk ke akun Mandorin Anda untuk melanjutkan.</p>
+                <p class="text-slate-500 text-sm mt-1">Masuk ke akun SIPORA Anda untuk melanjutkan.</p>
             </div>
 
             {{-- Session Status --}}
@@ -224,6 +229,6 @@ new #[Layout('layouts.guest-public')] class extends Component {
 
     {{-- Footer --}}
     <div class="relative pb-6 pt-4 text-center text-xs text-slate-400">
-        &copy; {{ date('Y') }} Mandorin. Hak cipta dilindungi.
+        &copy; {{ date('Y') }} SIPORA. Hak cipta dilindungi.
     </div>
 </div>

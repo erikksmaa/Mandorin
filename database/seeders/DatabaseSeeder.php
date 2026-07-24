@@ -9,19 +9,20 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            RoleSeeder::class,
+            OrganizationCategorySeeder::class,
+            ProgramCategorySeeder::class,
             UserSeeder::class,
-            ServiceSeeder::class,
-            ContractorProfileSeeder::class,
-            ContractorServiceSeeder::class,
-            ProjectSeeder::class,
-            ProjectWorkerSeeder::class,
+            AdminSeeder::class,
+            OrganizationSeeder::class,
+            OrganizationMemberSeeder::class,
+            ProgramSeeder::class,
+            ProgramMemberSeeder::class,
+            ActivityLogSeeder::class,
+            ActivityPhotoSeeder::class,
             AttendanceSeeder::class,
-            DailyReportSeeder::class,
-            PaymentLogSeeder::class,
-            ProjectStatusHistorySeeder::class,
-            PortfolioSeeder::class,
-            ReviewSeeder::class,
-            NotificationSeeder::class,
+            FinancialReportSeeder::class,
+            FinancialItemSeeder::class,
         ]);
     }
 }

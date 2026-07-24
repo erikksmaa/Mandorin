@@ -12,21 +12,34 @@ class Attendance extends Model
     use HasFactory;
 
     protected $fillable = [
-        'project_worker_id',
-        'date',
+        'program_id',
+        'user_id',
+        'attendance_date',
+        'check_in',
+        'check_out',
         'status',
+        'notes',
     ];
 
     protected function casts(): array
     {
         return [
-            'date' => 'date',
-            'status' => AttendanceStatus::class,
+            'attendance_date' => 'date',
+            'check_in'        => 'datetime:H:i',
+            'check_out'       => 'datetime:H:i',
+            'status'          => AttendanceStatus::class,
         ];
     }
 
-    public function projectWorker(): BelongsTo
+    // ── Relationships ──────────────────────────────────────────────
+
+    public function program(): BelongsTo
     {
-        return $this->belongsTo(ProjectWorker::class);
+        return $this->belongsTo(Program::class, 'program_id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
