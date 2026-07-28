@@ -2,10 +2,8 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
         <div class="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
             <div class="max-w-md">
-                <a href="{{ route('home') }}" wire:navigate class="inline-flex items-center gap-2 mb-3 group">
-                    <div class="w-8 h-8 rounded-lg bg-orange-500 text-white flex items-center justify-center font-black text-base shadow-sm">
-                        S
-                    </div>
+                <a href="{{ route('home') }}" wire:navigate class="inline-flex items-center gap-2.5 mb-3 group">
+                    <img src="{{ asset('logo.png') }}" alt="SIPORA" class="h-8 w-auto object-contain">
                     <span class="text-white font-bold text-lg" style="font-family: 'Big Shoulders Display', sans-serif;">SIPORA</span>
                 </a>
                 <p class="text-white/60 text-sm leading-relaxed">

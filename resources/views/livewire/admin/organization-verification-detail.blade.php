@@ -70,6 +70,58 @@
             <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6">
                 <h3 class="font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">Dokumen SK / Legalitas Organisasi</h3>
 
+                @forelse($documents as $doc)
+                    @php
+                        $ext = strtolower(pathinfo($doc, PATHINFO_EXTENSION));
+                        $fileName = basename($doc);
+                        $fileUrl = asset('storage/' . $doc);
+                    @endphp
+                    <div class="mb-6 p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
+                            <div class="flex items-center gap-2 min-w-0">
+                                @if(in_array($ext, ['jpg', 'jpeg', 'png', 'webp']))
+                                    <svg class="w-5 h-5 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                @elseif($ext === 'pdf')
+                                    <svg class="w-5 h-5 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                                @else
+                                    <svg class="w-5 h-5 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                @endif
+                                <span class="font-medium text-xs text-slate-700 truncate" title="{{ $fileName }}">{{ $fileName }}</span>
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <a href="{{ $fileUrl }}" target="_blank" class="px-3 py-1.5 bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 rounded-lg text-xs font-semibold transition inline-flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    Lihat Dokumen
+                                </a>
+                                <button wire:click="downloadDocument('{{ $doc }}')" class="px-3 py-1.5 bg-navy text-white hover:bg-navy-700 rounded-lg text-xs font-semibold transition inline-flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                    Download Dokumen
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Preview Content --}}
+                        <div>
+                            @if(in_array($ext, ['jpg', 'jpeg', 'png', 'webp']))
+                                <div class="bg-white p-2 rounded-lg border border-slate-200 flex justify-center">
+                                    <img src="{{ $fileUrl }}" alt="{{ $fileName }}" class="max-h-72 object-contain rounded">
+                                </div>
+                            @elseif($ext === 'pdf')
+                                <div class="bg-white rounded-lg border border-slate-200 overflow-hidden">
+                                    <iframe src="{{ $fileUrl }}" class="w-full h-80" frameBorder="0"></iframe>
+                                </div>
+                            @else
+                                <div class="p-3 bg-white rounded-lg text-xs text-slate-500 text-center border border-slate-200">
+                                    Preview tidak tersedia untuk format file ini. Klik <strong>Lihat Dokumen</strong> atau <strong>Download Dokumen</strong>.
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-xs font-medium text-center">
+                        Belum ada dokumen SK / legalitas yang diunggah oleh organisasi ini.
+                    </div>
+                @endforelse
 
                 <h3 class="font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2 mt-8">Struktur Anggota Terdaftar</h3>
                 @forelse($organization->members as $member)

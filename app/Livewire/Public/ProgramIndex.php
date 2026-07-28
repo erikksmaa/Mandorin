@@ -14,6 +14,13 @@ class ProgramIndex extends Component
     public $search = '';
     public $category = '';
 
+    public function updated($propertyName)
+    {
+        if (in_array($propertyName, ['search', 'category'])) {
+            $this->resetPage();
+        }
+    }
+
     public function render()
     {
         $categories = ProgramCategory::all();
@@ -27,7 +34,7 @@ class ProgramIndex extends Component
                 $q->where('category_id', $this->category);
             })
             ->latest()
-            ->paginate(12);
+            ->paginate(9);
 
         return view('livewire.public.program-index', compact('programs', 'categories'))
             ->layout('layouts.app');

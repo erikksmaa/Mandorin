@@ -12,12 +12,16 @@ class PortfolioIndex extends Component
 
     public $search = '';
 
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
-        $photos = ActivityPhoto::with(['activityLog.program.organization'])
+        $photos = ActivityPhoto::with(['activityLog.program.organization', 'activityLog.program.category'])
             ->whereHas('activityLog.program', function ($q) {
-                // Only show photos from Approved, Running, or Completed programs
-                $q->whereIn('status', ['Approved', 'Running', 'Completed']);
+                $q->where('status', 'Completed');
             })
             ->when($this->search, function ($q) {
                 $q->whereHas('activityLog.program', function ($query) {
@@ -25,7 +29,7 @@ class PortfolioIndex extends Component
                 });
             })
             ->latest()
-            ->paginate(16);
+            ->paginate(8);
 
         return view('livewire.public.portfolio-index', compact('photos'))
             ->layout('layouts.app');

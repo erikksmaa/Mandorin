@@ -58,6 +58,26 @@ class User extends Authenticatable
         return $this->hasMany(Organization::class, 'created_by');
     }
 
+    public function isLeaderVerified(): bool
+    {
+        return (bool) $this->is_active;
+    }
+
+    public function isOrganizationVerified(): bool
+    {
+        $org = $this->organizations()->first();
+        if (!$org) {
+            return false;
+        }
+        $statusVal = $org->status instanceof \BackedEnum ? $org->status->value : $org->status;
+        return $statusVal === 'active';
+    }
+
+    public function canCreateProgram(): bool
+    {
+        return $this->isLeaderVerified() && $this->isOrganizationVerified();
+    }
+
     public function ledPrograms(): HasMany
     {
         return $this->hasMany(Program::class, 'leader_id');

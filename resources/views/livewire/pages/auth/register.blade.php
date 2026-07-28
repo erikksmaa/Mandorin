@@ -50,15 +50,13 @@ new #[Layout('layouts.guest-public')] class extends Component {
 
         event(new Registered($user));
 
-        Auth::login($user);
+        session()->flash('swal_modal', [
+            'title' => 'Registrasi berhasil.',
+            'text'  => 'Akun Anda berhasil dibuat. Silakan login dan tunggu proses verifikasi dari administrator.',
+            'icon'  => 'success',
+        ]);
 
-        $this->redirect(
-            match ($roleSlug) {
-                'leader' => route('leader.dashboard', absolute: false),
-                default => route('verifier.dashboard', absolute: false),
-            },
-            navigate: true,
-        );
+        $this->redirect(route('login', absolute: false), navigate: true);
     }
 }; ?>
 
@@ -102,7 +100,7 @@ new #[Layout('layouts.guest-public')] class extends Component {
                     </label>
                     <div class="grid grid-cols-2 gap-3">
                         {{-- Verifikator --}}
-                        <label for="role_customer"
+                        {{-- <label for="role_customer"
                             class="relative flex flex-col gap-2 p-4 border-2 rounded-xl cursor-pointer transition-all select-none"
                             :class="role === 'customer' ? 'border-navy bg-navy/[0.03] shadow-sm' :
                                 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'">
@@ -130,7 +128,7 @@ new #[Layout('layouts.guest-public')] class extends Component {
                                         clip-rule="evenodd" />
                                 </svg>
                             </div>
-                        </label>
+                        </label> --}}
 
                         {{-- Contractor -> Leader --}}
                         <label for="role_contractor"

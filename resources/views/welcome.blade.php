@@ -51,7 +51,7 @@
                     {{-- Badge --}}
                     <div
                         class="inline-flex items-center gap-2 bg-orange-500/15 border border-orange-500/25 text-orange-300 text-xs font-semibold px-3 py-1.5 rounded-full mb-6">
-                        <span class="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse" aria-hidden="true"></span>
+                        <img src="{{ asset('logo.png') }}" alt="SIPORA Logo" class="w-4 h-4 object-contain">
                         Platform Program Kepemudaan & Olahraga
                     </div>
 

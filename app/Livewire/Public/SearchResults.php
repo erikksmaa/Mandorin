@@ -18,8 +18,13 @@ class SearchResults extends Component
     public function render()
     {
         $organizations = Organization::with('category')
-            ->where('name', 'like', "%{$this->query}%")
-            ->orWhere('description', 'like', "%{$this->query}%")
+            ->where('status', \App\Enums\OrganizationStatus::Active)
+            ->when($this->query, function ($q) {
+                $q->where(function ($query) {
+                    $query->where('name', 'like', "%{$this->query}%")
+                          ->orWhere('description', 'like', "%{$this->query}%");
+                });
+            })
             ->take(6)
             ->get();
 

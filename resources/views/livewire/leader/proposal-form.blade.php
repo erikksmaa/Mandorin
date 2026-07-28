@@ -25,17 +25,26 @@
                     @error('title') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">
-                        Organisasi Pelaksana <span class="text-red-500">*</span>
-                    </label>
-                    <select wire:model="organization_id" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-navy outline-none">
-                        <option value="">-- Pilih Organisasi --</option>
-                        @foreach($organizations as $org)
-                            <option value="{{ $org->id }}">{{ $org->name }}</option>
-                        @endforeach
-                    </select>
-                    @error('organization_id') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                <div class="md:col-span-2 bg-slate-50 border border-slate-200 rounded-xl p-4">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Informasi Organisasi Pemohon (Otomatis)</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Nama Organisasi</label>
+                            <input type="text" value="{{ $organization?->name ?? '-' }}" readonly class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 outline-none cursor-not-allowed">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Kode Organisasi</label>
+                            <input type="text" value="{{ $organization?->organization_code ?? '-' }}" readonly class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 outline-none cursor-not-allowed font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Kategori Organisasi</label>
+                            <input type="text" value="{{ $organization?->category?->name ?? '-' }}" readonly class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 outline-none cursor-not-allowed">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Status Organisasi</label>
+                            <input type="text" value="{{ $organization?->status instanceof \BackedEnum ? $organization->status->label() : ($organization?->status ?? '-') }}" readonly class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-emerald-600 outline-none cursor-not-allowed">
+                        </div>
+                    </div>
                 </div>
 
                 <div>

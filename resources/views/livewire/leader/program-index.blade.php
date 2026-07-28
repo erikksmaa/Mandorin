@@ -3,6 +3,18 @@
         Kelola Program
     </h1>
 
+    @if(!auth()->user()->canCreateProgram())
+        <div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-sm flex items-start gap-3">
+            <svg class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+            <div>
+                <span class="font-bold">Perhatian: Anda belum dapat mengajukan program.</span>
+                <p class="mt-0.5 text-xs text-amber-700">Pastikan akun Ketua Pelaksana dan Organisasi Anda telah diverifikasi oleh Administrator sebelum membuat pengajuan program baru.</p>
+            </div>
+        </div>
+    @endif
+
     <div class="flex flex-col sm:flex-row gap-3 mb-6">
         <div class="relative flex-grow sm:max-w-xs">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -10,9 +22,18 @@
             </div>
             <input wire:model.live.debounce.300ms="search" type="text" class="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-xl focus:ring-navy focus:border-navy" placeholder="Cari judul atau kode program...">
         </div>
-        <a href="{{ route('leader.programs.create') }}" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-xl transition whitespace-nowrap">
-            + Ajukan Program Baru
-        </a>
+        @if(auth()->user()->canCreateProgram())
+            <a href="{{ route('leader.programs.create') }}" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-xl transition whitespace-nowrap">
+                + Ajukan Program Baru
+            </a>
+        @else
+            <button
+                @click="Swal.fire({ icon: 'warning', title: 'Anda belum dapat mengajukan program.', text: 'Pastikan akun Ketua Pelaksana dan Organisasi telah diverifikasi Administrator.', confirmButtonText: 'OK, Mengerti', confirmButtonColor: '#0f172a' })"
+                class="px-4 py-2 bg-slate-300 text-slate-500 cursor-pointer text-sm font-semibold rounded-xl transition whitespace-nowrap"
+                title="Memerlukan verifikasi akun dan organisasi">
+                🔒 + Ajukan Program Baru
+            </button>
+        @endif
     </div>
 
     <!-- Program List -->

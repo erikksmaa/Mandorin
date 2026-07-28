@@ -26,10 +26,8 @@ new class extends Component {
         <div class="flex justify-between items-center h-16">
 
             {{-- LOGO --}}
-            <a href="{{ route('home') }}" wire:navigate class="flex items-center gap-2 shrink-0 group">
-                <div class="w-9 h-9 rounded-xl bg-navy text-white flex items-center justify-center font-black text-lg shadow-sm group-hover:scale-105 transition-transform">
-                    S
-                </div>
+            <a href="{{ route('home') }}" wire:navigate class="flex items-center gap-2.5 shrink-0 group">
+                <img src="{{ asset('logo.png') }}" alt="SIPORA" class="h-9 w-auto object-contain group-hover:scale-105 transition-transform">
                 <div class="flex flex-col">
                     <span class="font-black text-xl text-navy leading-none tracking-tight" style="font-family: 'Big Shoulders Display', sans-serif;">SIPORA</span>
                     <span class="text-[9px] text-orange-500 font-bold uppercase tracking-wider leading-none mt-0.5">Dindikpora Pemalang</span>

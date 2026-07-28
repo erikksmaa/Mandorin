@@ -79,7 +79,7 @@
                                     💰 Rp {{ number_format($elpj->total_expense ?? 0, 0, ',', '.') }}
                                 </p>
                             </div>
-                            <a href="{{ route('verifier.elpj.show', $elpj) }}" class="shrink-0 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-sm font-medium transition">
+                            <a href="{{ route('verifier.proposals.show', $elpj->program_id) }}" class="shrink-0 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-sm font-medium transition">
                                 Verifikasi
                             </a>
                         </div>

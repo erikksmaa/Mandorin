@@ -13,6 +13,11 @@ class OrganizationShow extends Component
     {
         $id = $organization instanceof Organization ? $organization->id : $organization;
         $this->organization = Organization::with('category', 'creator', 'programs.category', 'members.user')->findOrFail($id);
+
+        $statusVal = $this->organization->status instanceof \BackedEnum ? $this->organization->status->value : $this->organization->status;
+        if ($statusVal !== 'active') {
+            abort(404);
+        }
     }
 
     public function render()

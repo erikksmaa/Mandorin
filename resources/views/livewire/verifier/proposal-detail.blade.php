@@ -43,6 +43,9 @@
                 <button @click="tab = 'logbook'" :class="{ 'border-b-2 border-navy text-navy font-semibold': tab === 'logbook', 'text-slate-500 hover:text-slate-700': tab !== 'logbook' }" class="px-4 py-3 whitespace-nowrap text-sm">
                     Logbook Kegiatan
                 </button>
+                <button @click="tab = 'elpj'" :class="{ 'border-b-2 border-navy text-navy font-semibold': tab === 'elpj', 'text-slate-500 hover:text-slate-700': tab !== 'elpj' }" class="px-4 py-3 whitespace-nowrap text-sm">
+                    Laporan E-LPJ
+                </button>
             </div>
 
             {{-- Tab Detail --}}
@@ -160,6 +163,157 @@
                                 <p class="text-sm text-slate-600 whitespace-pre-wrap">{{ $log->description }}</p>
                             </div>
                         @endforeach
+                    </div>
+                @endif
+            </div>
+
+            {{-- Tab E-LPJ --}}
+            <div x-show="tab === 'elpj'" x-cloak x-data="{ openDetailModal: false }">
+                @php $lpj = $program->financialReport; @endphp
+                @if(!$lpj)
+                    <div class="text-center py-8 bg-slate-50 border border-slate-100 rounded-xl text-slate-500 text-sm">
+                        <p class="font-medium">Belum ada laporan yang dikirim.</p>
+                        <p class="text-xs text-slate-400 mt-1">Ketua Pelaksana belum mengirimkan laporan E-LPJ untuk program ini.</p>
+                    </div>
+                @else
+                    <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase border-b border-slate-200">
+                                <tr>
+                                    <th class="px-4 py-3">Nomor LPJ</th>
+                                    <th class="px-4 py-3">Tanggal Submit</th>
+                                    <th class="px-4 py-3">Total Pengeluaran</th>
+                                    <th class="px-4 py-3">Status</th>
+                                    <th class="px-4 py-3 text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                @php
+                                    $lpjStatusVal = $lpj->status instanceof \BackedEnum ? $lpj->status->value : $lpj->status;
+                                    $lpjStatusLabel = $lpj->status instanceof \BackedEnum ? $lpj->status->label() : ucfirst($lpjStatusVal);
+                                    $lpjStatusClass = match($lpjStatusVal) {
+                                        'Approved' => 'bg-green-100 text-green-700',
+                                        'Submitted' => 'bg-blue-100 text-blue-700',
+                                        'Revision' => 'bg-amber-100 text-amber-700',
+                                        'Rejected' => 'bg-red-100 text-red-700',
+                                        default => 'bg-slate-100 text-slate-700',
+                                    };
+                                @endphp
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-4 py-3 font-mono font-bold text-slate-800">{{ $lpj->report_number }}</td>
+                                    <td class="px-4 py-3 text-slate-600">{{ $lpj->submitted_at ? $lpj->submitted_at->format('d M Y, H:i') : '-' }}</td>
+                                    <td class="px-4 py-3 font-bold text-slate-800">Rp {{ number_format($lpj->total_expense ?? 0, 0, ',', '.') }}</td>
+                                    <td class="px-4 py-3">
+                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $lpjStatusClass }}">
+                                            {{ $lpjStatusLabel }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 text-right">
+                                        <button @click="openDetailModal = true" class="px-3 py-1.5 bg-navy text-white hover:bg-slate-800 rounded-lg text-xs font-semibold transition">
+                                            Aksi Detail &rarr;
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {{-- Modal Detail E-LPJ --}}
+                    <div x-show="openDetailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm" x-cloak>
+                        <div @click.outside="openDetailModal = false" class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl">
+                            <div class="flex justify-between items-center pb-4 border-b border-slate-100 mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-slate-800" style="font-family: 'Big Shoulders Display', sans-serif;">Detail Laporan E-LPJ</h3>
+                                    <p class="text-xs font-mono text-slate-500">{{ $lpj->report_number }}</p>
+                                </div>
+                                <button @click="openDetailModal = false" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+
+                            {{-- Ringkasan LPJ --}}
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl mb-6">
+                                <div>
+                                    <span class="block text-xs text-slate-500">Total Anggaran</span>
+                                    <span class="font-bold text-slate-800 text-sm">Rp {{ number_format($lpj->total_budget ?? 0, 0, ',', '.') }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs text-slate-500">Penerimaan</span>
+                                    <span class="font-bold text-slate-800 text-sm">Rp {{ number_format($lpj->total_income ?? 0, 0, ',', '.') }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs text-slate-500">Pengeluaran</span>
+                                    <span class="font-bold text-slate-800 text-sm">Rp {{ number_format($lpj->total_expense ?? 0, 0, ',', '.') }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs text-slate-500">Sisa Anggaran</span>
+                                    <span class="font-bold text-slate-800 text-sm">Rp {{ number_format($lpj->remaining_budget ?? 0, 0, ',', '.') }}</span>
+                                </div>
+                            </div>
+
+                            {{-- Daftar Financial Items --}}
+                            <h4 class="font-bold text-slate-800 text-sm mb-3">Daftar Financial Items & Bukti Struk</h4>
+                            <div class="overflow-x-auto border border-slate-200 rounded-xl mb-6">
+                                <table class="w-full text-left text-xs">
+                                    <thead class="bg-slate-50 text-slate-500 uppercase border-b border-slate-200">
+                                        <tr>
+                                            <th class="px-3 py-2">Deskripsi</th>
+                                            <th class="px-3 py-2">Tipe</th>
+                                            <th class="px-3 py-2">Kategori</th>
+                                            <th class="px-3 py-2">Jumlah</th>
+                                            <th class="px-3 py-2">Harga Satuan</th>
+                                            <th class="px-3 py-2">Subtotal</th>
+                                            <th class="px-3 py-2">Bukti Struk</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        @forelse($lpj->items as $item)
+                                            <tr>
+                                                <td class="px-3 py-2 font-medium text-slate-800">{{ $item->description }}</td>
+                                                <td class="px-3 py-2">
+                                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold {{ ($item->type instanceof \BackedEnum ? $item->type->value : $item->type) === 'income' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                                                        {{ strtoupper($item->type instanceof \BackedEnum ? $item->type->value : $item->type) }}
+                                                    </span>
+                                                </td>
+                                                <td class="px-3 py-2 text-slate-600">{{ $item->category ?? '-' }}</td>
+                                                <td class="px-3 py-2 text-slate-600">{{ $item->quantity }}</td>
+                                                <td class="px-3 py-2 text-slate-600">Rp {{ number_format($item->unit_price ?? 0, 0, ',', '.') }}</td>
+                                                <td class="px-3 py-2 font-bold text-slate-800">Rp {{ number_format($item->subtotal ?? 0, 0, ',', '.') }}</td>
+                                                <td class="px-3 py-2">
+                                                    @if($item->receipt)
+                                                        <a href="{{ asset('storage/' . $item->receipt) }}" target="_blank" class="text-blue-600 hover:underline font-semibold flex items-center gap-1">
+                                                            🖼️ Lihat Struk
+                                                        </a>
+                                                    @else
+                                                        <span class="text-slate-400 italic">Tidak ada</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="7" class="px-3 py-4 text-center text-slate-400">Tidak ada rincian transaksi.</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            @if($lpj->verifier_notes || $lpj->verifier)
+                                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-900">
+                                    <h5 class="font-bold mb-1">Catatan Verifikator</h5>
+                                    <p>{{ $lpj->verifier_notes ?? 'Tidak ada catatan khusus.' }}</p>
+                                    @if($lpj->verifier)
+                                        <p class="mt-2 text-[10px] text-amber-700">Diverifikasi oleh: {{ $lpj->verifier->name }} ({{ $lpj->verified_at?->format('d M Y, H:i') }})</p>
+                                    @endif
+                                </div>
+                            @endif
+
+                            <div class="mt-6 flex justify-end">
+                                <button @click="openDetailModal = false" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-xl transition">
+                                    Tutup
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 @endif
             </div>

@@ -15,7 +15,15 @@ class ProposalDetail extends Component
     public function mount($program)
     {
         $id = $program instanceof Program ? $program->id : $program;
-        $this->program = Program::with('organization', 'category', 'leader', 'members.user', 'creator')->findOrFail($id);
+        $this->program = Program::with([
+            'organization',
+            'category',
+            'leader',
+            'members.user',
+            'creator',
+            'financialReport.items',
+            'financialReport.verifier'
+        ])->findOrFail($id);
         $this->notes = $this->program->proposal_notes ?? '';
     }
 

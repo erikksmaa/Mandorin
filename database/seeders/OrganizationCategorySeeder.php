@@ -11,24 +11,28 @@ class OrganizationCategorySeeder extends Seeder
     {
         $categories = [
             [
-                'name' => 'Karang Taruna',
-                'description' => 'Karang Taruna Desa',
+                'name'        => 'Karang Taruna',
+                'description' => 'Organisasi kepemudaan tingkat desa/kelurahan yang berfokus pada pemberdayaan pemuda.',
             ],
             [
-                'name' => 'Komunitas',
-                'description' => 'Komunitas Pemuda',
+                'name'        => 'Komunitas Pemuda',
+                'description' => 'Komunitas non-formal yang diinisiasi oleh pemuda untuk kegiatan positif.',
             ],
             [
-                'name' => 'Organisasi Kepemudaan',
-                'description' => 'OKP',
+                'name'        => 'Organisasi Mahasiswa',
+                'description' => 'Organisasi kemahasiswaan dari perguruan tinggi di wilayah Pemalang.',
             ],
             [
-                'name' => 'Sekolah',
-                'description' => 'OSIS atau Ekstrakurikuler',
+                'name'        => 'Organisasi Kepemudaan',
+                'description' => 'OKP yang memiliki legalitas formal dan bergerak di bidang kepemudaan.',
             ],
             [
-                'name' => 'Perguruan Tinggi',
-                'description' => 'UKM Kampus',
+                'name'        => 'Klub Olahraga',
+                'description' => 'Klub olahraga aktif yang menaungi atlet muda di berbagai cabang olahraga.',
+            ],
+            [
+                'name'        => 'Komunitas Sosial',
+                'description' => 'Komunitas yang bergerak di bidang sosial, lingkungan, dan kemanusiaan.',
             ],
         ];
 

@@ -14,6 +14,7 @@ class ProposalForm extends Component
     use WithFileUploads;
 
     public $program;
+    public $organization;
     public $organization_id = '';
     public $title = '';
     public $category_id = '';
@@ -28,6 +29,21 @@ class ProposalForm extends Component
 
     public function mount(Program $program = null)
     {
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+
+        // TASK 3: Check verification requirements
+        if (!$user->canCreateProgram()) {
+            session()->flash('swal_error', 'Anda belum dapat mengajukan program. Pastikan akun Ketua Pelaksana dan Organisasi telah diverifikasi Administrator.');
+            return redirect()->route('leader.programs.index');
+        }
+
+        // TASK 6: Auto-bind Leader Organization
+        $this->organization = Organization::with('category')->where('created_by', $user->id)->first();
+        if ($this->organization) {
+            $this->organization_id = $this->organization->id;
+        }
+
         if ($program && $program->exists) {
             $this->program = $program;
             $this->organization_id = $program->organization_id;
@@ -69,6 +85,17 @@ class ProposalForm extends Component
 
     private function save($status)
     {
+        // Enforce TASK 3 check before saving
+        if (!auth()->user()->canCreateProgram()) {
+            $this->dispatch('swal:error', message: 'Anda belum dapat mengajukan program. Pastikan akun Ketua Pelaksana dan Organisasi telah diverifikasi Administrator.');
+            return;
+        }
+
+        // TASK 6: Always enforce Leader's own organization
+        if ($this->organization) {
+            $this->organization_id = $this->organization->id;
+        }
+
         $this->validate();
 
         // Handle file upload
@@ -105,7 +132,7 @@ class ProposalForm extends Component
             $message = $status === 'Draft' ? 'Draft proposal berhasil disimpan!' : 'Proposal program berhasil diajukan!';
         }
 
-        $this->dispatch('swal:success', message: $message);
+        session()->flash('swal_success', $message);
         
         return redirect()->route('leader.programs.index');
     }
@@ -113,9 +140,8 @@ class ProposalForm extends Component
     public function render()
     {
         $categories = ProgramCategory::all();
-        $organizations = Organization::where('created_by', auth()->id())->get();
 
-        return view('livewire.leader.proposal-form', compact('categories', 'organizations'))
+        return view('livewire.leader.proposal-form', compact('categories'))
             ->layout('layouts.app');
     }
 }

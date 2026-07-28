@@ -14,9 +14,11 @@ class OrganizationIndex extends Component
     public $search = '';
     public $category = '';
 
-    public function updatingSearch()
+    public function updated($propertyName)
     {
-        $this->resetPage();
+        if (in_array($propertyName, ['search', 'category'])) {
+            $this->resetPage();
+        }
     }
 
     public function render()
@@ -24,16 +26,18 @@ class OrganizationIndex extends Component
         $categories = OrganizationCategory::all();
 
         $organizations = Organization::with('category', 'creator')
-            ->where('status', 'active')
+            ->where('status', \App\Enums\OrganizationStatus::Active)
             ->when($this->search, function ($q) {
-                $q->where('name', 'like', "%{$this->search}%")
-                  ->orWhere('description', 'like', "%{$this->search}%");
+                $q->where(function ($query) {
+                    $query->where('name', 'like', "%{$this->search}%")
+                          ->orWhere('description', 'like', "%{$this->search}%");
+                });
             })
             ->when($this->category, function ($q) {
                 $q->where('category_id', $this->category);
             })
             ->latest()
-            ->paginate(12);
+            ->paginate(9);
 
         return view('livewire.public.organization-index', compact('organizations', 'categories'))
             ->layout('layouts.app');
